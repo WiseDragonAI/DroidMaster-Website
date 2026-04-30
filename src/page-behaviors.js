@@ -12,6 +12,150 @@
         document.body.dataset.debug = debugControlsEnabled ? 'true' : 'false';
       };
 
+      // WHAT: Renders the voice-note mock as one smooth accumulated envelope fed by mock voice data.
+      (() => {
+        const setupVoiceSpectrumWidgets = () => {
+          const histories = Array.from(document.querySelectorAll('.voice-history'));
+          if (!histories.length) return;
+
+          histories.forEach((history, historyIndex) => {
+            if (!(history instanceof HTMLElement) || history.dataset.voiceSpectrumReady === 'true') return;
+            history.dataset.voiceSpectrumReady = 'true';
+
+            const canvas = document.createElement('canvas');
+            canvas.className = 'voice-spectrum-canvas';
+            canvas.setAttribute('aria-hidden', 'true');
+            history.appendChild(canvas);
+
+            const timer = document.createElement('span');
+            timer.className = 'voice-time-chip';
+            timer.dataset.wordGlowSkip = 'true';
+            timer.textContent = '00:00';
+            history.appendChild(timer);
+
+            const context = canvas.getContext('2d');
+            if (!context) return;
+
+            const shell = history.closest('.voice-shell');
+            const values = [];
+            const startedAt = performance.now() - historyIndex * 420;
+            let smoothed = 0.28;
+            let lastFrame = 0;
+
+            const isActive = () => {
+              const widget = history.closest('.workspace-voice-widget');
+              return !widget || widget.dataset.active === 'true';
+            };
+
+            const resize = () => {
+              const rect = history.getBoundingClientRect();
+              const width = Math.max(1, Math.round(rect.width * window.devicePixelRatio));
+              const height = Math.max(1, Math.round(rect.height * window.devicePixelRatio));
+              if (canvas.width === width && canvas.height === height) return;
+              canvas.width = width;
+              canvas.height = height;
+            };
+
+            const mockAmplitude = (elapsedSeconds) => {
+              const phrase = Math.sin(elapsedSeconds * 2.35 + historyIndex * 0.9) * 0.5 + 0.5;
+              const syllable = Math.sin(elapsedSeconds * 9.6 + historyIndex * 1.7) * 0.5 + 0.5;
+              const consonant = Math.sin(elapsedSeconds * 21.2 + historyIndex * 2.4) * 0.5 + 0.5;
+              return Math.min(1, 0.16 + phrase * 0.46 + syllable * 0.26 + consonant * 0.12);
+            };
+
+            const drawEmpty = () => {
+              context.clearRect(0, 0, canvas.width, canvas.height);
+              timer.textContent = '00:00';
+              if (shell instanceof HTMLElement) shell.style.setProperty('--voice-level', '0%');
+            };
+
+            const draw = (elapsedSeconds) => {
+              const width = canvas.width;
+              const height = canvas.height;
+              const ratio = window.devicePixelRatio || 1;
+              const maxPoints = Math.max(32, Math.floor(width / (3.2 * ratio)));
+              const sample = mockAmplitude(elapsedSeconds);
+              smoothed += (sample - smoothed) * 0.18;
+              values.push(smoothed);
+              while (values.length > maxPoints) values.shift();
+
+              context.clearRect(0, 0, width, height);
+              const topPadding = 10 * ratio;
+              const bottomPadding = 10 * ratio;
+              const baseline = height - bottomPadding;
+              const maxWaveHeight = Math.max(1, height - topPadding - bottomPadding);
+              const step = values.length > 1 ? width / (values.length - 1) : width;
+              const fill = context.createLinearGradient(0, topPadding, 0, baseline);
+              fill.addColorStop(0, 'rgba(229, 128, 76, 0.92)');
+              fill.addColorStop(0.62, 'rgba(195, 96, 58, 0.74)');
+              fill.addColorStop(1, 'rgba(110, 49, 32, 0.94)');
+
+              context.save();
+              context.shadowColor = 'rgba(229, 128, 76, 0.24)';
+              context.shadowBlur = 14 * ratio;
+              context.beginPath();
+              context.moveTo(0, baseline);
+              values.forEach((value, index) => {
+                const x = index * step;
+                const y = baseline - Math.pow(value, 0.78) * maxWaveHeight;
+                if (index === 0) {
+                  context.lineTo(x, y);
+                  return;
+                }
+                const previousValue = values[index - 1];
+                const previousX = (index - 1) * step;
+                const previousY = baseline - Math.pow(previousValue, 0.78) * maxWaveHeight;
+                context.quadraticCurveTo(previousX, previousY, (previousX + x) / 2, (previousY + y) / 2);
+              });
+              if (values.length) {
+                const lastValue = values[values.length - 1];
+                context.lineTo(width, baseline - Math.pow(lastValue, 0.78) * maxWaveHeight);
+              }
+              context.lineTo(width, baseline);
+              context.closePath();
+              context.fillStyle = fill;
+              context.fill();
+              context.restore();
+
+              context.strokeStyle = 'rgba(255, 187, 129, 0.28)';
+              context.lineWidth = 1 * ratio;
+              context.beginPath();
+              values.forEach((value, index) => {
+                const x = index * step;
+                const y = baseline - Math.pow(value, 0.78) * maxWaveHeight;
+                if (index === 0) context.moveTo(x, y);
+                else context.lineTo(x, y);
+              });
+              context.stroke();
+
+              const seconds = Math.floor(elapsedSeconds);
+              timer.textContent = `00:${String(seconds % 60).padStart(2, '0')}`;
+              if (shell instanceof HTMLElement) shell.style.setProperty('--voice-level', `${Math.round(smoothed * 92)}%`);
+            };
+
+            const tick = (now) => {
+              resize();
+              if (!isActive()) {
+                values.length = 0;
+                smoothed = 0.18;
+                drawEmpty();
+                window.requestAnimationFrame(tick);
+                return;
+              }
+              if (now - lastFrame >= 1000 / 60) {
+                lastFrame = now;
+                draw((now - startedAt) / 1000);
+              }
+              window.requestAnimationFrame(tick);
+            };
+
+            window.requestAnimationFrame(tick);
+          });
+        };
+
+        window.addEventListener('load', setupVoiceSpectrumWidgets);
+      })();
+
       // WHAT: Let the operator cycle through robotic Google Fonts for the masthead.
       (() => {
         const brandFonts = [
