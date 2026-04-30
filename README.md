@@ -49,7 +49,7 @@ http://localhost:5173/?debug=1
 
 ## Public Links
 
-1. GitHub: https://github.com/WiseDragonAI/DroidMaster-Website
+1. GitHub: https://github.com/WiseDragonAI/DroidMaster
 2. Discord: https://discord.gg/QzGH2XwySv
 
 ## Source Layout

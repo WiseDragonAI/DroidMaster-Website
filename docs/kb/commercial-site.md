@@ -60,5 +60,5 @@
 
 ## Link Targets
 
-1. GitHub: `https://github.com/WiseDragonAI/DroidMaster-Website`
+1. GitHub: `https://github.com/WiseDragonAI/DroidMaster`
 2. Discord: `https://discord.gg/QzGH2XwySv`

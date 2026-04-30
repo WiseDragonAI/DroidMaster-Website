@@ -18,7 +18,7 @@ This repository owns the public DroidMaster commercial website. Keep the canonic
 2. Do not commit `dist/`, `node_modules/`, Vite cache, logs, or `.env` files.
 3. Do not add secrets to the repository. The static website requires no runtime secret.
 4. Keep external links aligned with:
-   1. GitHub: `https://github.com/WiseDragonAI/DroidMaster-Website`
+   1. GitHub: `https://github.com/WiseDragonAI/DroidMaster`
    2. Discord: `https://discord.gg/QzGH2XwySv`
 5. Preserve the `?debug=1` gate when changing title, punchline, or palette controls.
 6. Preserve the workspace mock invariants documented in `docs/animation-sequence.md`.
