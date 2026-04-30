@@ -943,3 +943,66 @@
 
         window.addEventListener('load', setupWorkspaceStack);
       })();
+      // WHAT: Gives each visible word its own hover glow while leaving FAQ answer content plain.
+      (() => {
+        const excludedWordGlowSelector = [
+          'script',
+          'style',
+          'svg',
+          'canvas',
+          'textarea',
+          'input',
+          'select',
+          'option',
+          '.faq-card-body',
+          '.punchline-word',
+          '.text-glow-word',
+          '[data-word-glow-skip]',
+        ].join(',');
+        let wrappingScheduled = false;
+
+        const canWrapTextNode = (node) => {
+          if (!node.textContent || !node.textContent.trim()) return false;
+          const parent = node.parentElement;
+          return Boolean(parent && !parent.closest(excludedWordGlowSelector));
+        };
+
+        const wrapTextNode = (node) => {
+          if (!canWrapTextNode(node)) return;
+          const fragment = document.createDocumentFragment();
+          node.textContent.split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) {
+              fragment.appendChild(document.createTextNode(part));
+              return;
+            }
+            const word = document.createElement('span');
+            word.className = 'text-glow-word';
+            word.textContent = part;
+            fragment.appendChild(word);
+          });
+          node.replaceWith(fragment);
+        };
+
+        const wrapVisibleWords = () => {
+          wrappingScheduled = false;
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+            acceptNode: (node) => (canWrapTextNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
+          });
+          const nodes = [];
+          while (walker.nextNode()) nodes.push(walker.currentNode);
+          nodes.forEach(wrapTextNode);
+        };
+
+        const scheduleWrap = () => {
+          if (wrappingScheduled) return;
+          wrappingScheduled = true;
+          window.requestAnimationFrame(wrapVisibleWords);
+        };
+
+        window.addEventListener('load', () => {
+          scheduleWrap();
+          const observer = new MutationObserver(scheduleWrap);
+          observer.observe(document.body, { childList: true, subtree: true });
+        });
+      })();

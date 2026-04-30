@@ -674,11 +674,13 @@
         white-space: nowrap;
         font-family: var(--punchline-font, 'Rajdhani', sans-serif) !important;
       }
-      .punchline-word {
+      .punchline-word,
+      .text-glow-word {
         display: inline-block;
         transition: filter 340ms ease, text-shadow 340ms ease, transform 340ms ease;
       }
-      .punchline-word:hover {
+      .punchline-word:hover,
+      .text-glow-word:hover {
         filter: brightness(1.06);
         text-shadow:
           0 0 .08em currentColor,
