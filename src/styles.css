@@ -676,14 +676,13 @@
       }
       .punchline-word {
         display: inline-block;
-        transition: filter 180ms ease, text-shadow 180ms ease, transform 180ms ease;
+        transition: filter 340ms ease, text-shadow 340ms ease, transform 340ms ease;
       }
       .punchline-word:hover {
-        filter: brightness(1.2);
+        filter: brightness(1.06);
         text-shadow:
-          0 0 .12em currentColor,
-          0 0 .32em currentColor,
-          0 0 .58em currentColor;
+          0 0 .08em currentColor,
+          0 0 .22em currentColor;
         transform: translateY(-1px);
       }
       .terminal-button {
