@@ -1,0 +1,748 @@
+<!doctype html>
+<!-- WHAT: Tailwind-first remake of the commercial landing while preserving DroidFleet art direction. -->
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <title>DroidMaster | Command Deck For AI Builders</title>
+    <style>
+      :root {
+        --primary-h: 204;
+        --primary-s: 95;
+        --primary-rgb: 13 165 255;
+        --primary-soft-rgb: 12 152 235;
+        --primary-ui-rgb: 11 135 209;
+        --primary-muted-rgb: 8 107 166;
+        --accent-h: 30;
+        --accent-s: 82;
+        --accent-rgb: 224 132 40;
+        --accent-soft-rgb: 207 122 37;
+        --accent-ui-rgb: 184 109 33;
+        --accent-muted-rgb: 146 86 26;
+        --offer-glow-power: .72;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg0: '#141414',
+              bg1: '#1a1a1a',
+              panel0: '#1d1d1d',
+              panel1: '#171717',
+              line0: '#353535',
+              line1: '#4a4a4a',
+              cyan0: 'rgb(var(--accent-rgb) / <alpha-value>)',
+              blue0: 'rgb(var(--primary-rgb) / <alpha-value>)',
+              amber0: 'rgb(var(--accent-rgb) / <alpha-value>)',
+              text0: '#f0ece7',
+              text1: '#b7aea2'
+            },
+            boxShadow: {
+              frame: '0 0 0 1px rgba(71,138,214,.45), inset 0 1px 0 rgba(255,255,255,.10), 0 24px 60px rgba(0,0,0,.55)',
+              panel: '0 0 0 1px rgba(73,142,220,.45), inset 0 1px 0 rgba(255,255,255,.08), 0 10px 28px rgba(0,0,0,.40)',
+              neon: '0 0 20px rgb(var(--primary-rgb) / .32), inset 0 0 12px rgb(var(--primary-rgb) / .14)',
+              amber: '0 0 24px rgb(var(--accent-rgb) / .42), inset 0 0 14px rgb(var(--accent-rgb) / .24)'
+            },
+            fontFamily: {
+              display: ['Orbitron', 'ui-sans-serif', 'system-ui'],
+              body: ['Ubuntu', 'ui-sans-serif', 'system-ui']
+            }
+          }
+        }
+      };
+    </script>
+    <script src='https://cdn.tailwindcss.com'></script>
+    <script type='module' src='/src/workspace-demo.js'></script>
+    <script type='module' src='/src/page-behaviors.js'></script>
+    <link rel='preconnect' href='https://fonts.googleapis.com' />
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+    <link href='https://fonts.googleapis.com/css2?family=Aldrich&family=Audiowide&family=Barlow+Condensed:wght@600;700&family=Black+Ops+One&family=Bungee+Inline&family=Chakra+Petch:wght@700&family=Changa+One&family=Electrolize&family=Encode+Sans+Semi+Condensed:wght@700;800&family=Exo+2:wght@700;800&family=Jura:wght@700&family=Kanit:wght@700&family=Michroma&family=Orbitron:wght@500;700;800&family=Oxanium:wght@700&family=Quantico:wght@700&family=Rajdhani:wght@500;600;700&family=Saira:wght@700;800&family=Saira+Semi+Condensed:wght@700;800&family=Saira+Stencil+One&family=Share+Tech+Mono&family=Space+Grotesk:wght@700&family=Syncopate:wght@700&family=Tektur:wght@700&family=Titillium+Web:wght@700;900&family=Tomorrow:wght@700;800&family=Turret+Road:wght@700&family=Ubuntu:wght@400;500;700&family=Zen+Dots&display=swap' rel='stylesheet' />
+    <link rel='stylesheet' href='/src/styles.css' />
+  </head>
+  <body class='relative overflow-x-hidden bg-bg0 text-text0'>
+    <section class='accent-tuner' data-color-panel data-color-target='secondary' data-debug-control hidden>
+      <div class='accent-tuner-header'>
+        <p class='accent-tuner-label' data-color-target-label>Secondary Accent</p>
+        <p class='accent-tuner-value' data-color-summary>30deg · 82% · 88%</p>
+      </div>
+      <p class='accent-tuner-note' data-color-note>Auto-cycles between hue 30 and 40 when animations are on. Turn animations off to tune hue manually.</p>
+      <div class='accent-tuner-targets'>
+        <button type='button' class='accent-tuner-target' data-color-target-option='primary' data-active='false' aria-pressed='false'>Primary</button>
+        <button type='button' class='accent-tuner-target' data-color-target-option='secondary' data-active='true' aria-pressed='true'>Secondary</button>
+      </div>
+      <div class='accent-tuner-actions'>
+        <button type='button' class='accent-tuner-action' data-color-animation-toggle aria-pressed='true'>Animations on</button>
+        <button type='button' class='accent-tuner-action' data-color-close>Close</button>
+      </div>
+      <div class='accent-tuner-row'>
+        <p class='accent-tuner-label' data-color-hue-label>Hue Auto</p>
+        <p class='accent-tuner-value' data-color-hue-value>30deg</p>
+      </div>
+      <input data-color-hue-slider class='accent-tuner-range' type='range' min='0' max='359' value='48' disabled />
+      <div class='accent-tuner-scale'>
+        <span>Range Min</span>
+        <span>Oscillating</span>
+        <span>Range Max</span>
+      </div>
+      <div class='accent-tuner-row'>
+        <p class='accent-tuner-label'>Saturation</p>
+        <p class='accent-tuner-value' data-color-saturation-value>82%</p>
+      </div>
+      <input data-color-saturation-slider class='accent-tuner-range' type='range' min='0' max='100' value='82' />
+      <div class='accent-tuner-scale'>
+        <span>Gray</span>
+        <span>Colored</span>
+        <span>Pure</span>
+      </div>
+      <div class='accent-tuner-row'>
+        <p class='accent-tuner-label'>Value</p>
+        <p class='accent-tuner-value' data-color-luminosity-value>88%</p>
+      </div>
+      <input data-color-luminosity-slider class='accent-tuner-range' type='range' min='0' max='100' value='88' />
+      <div class='accent-tuner-scale'>
+        <span>Black</span>
+        <span>Lit</span>
+        <span>Max</span>
+      </div>
+    </section>
+    <button type='button' class='accent-tuner-reopen' data-color-reopen data-debug-control hidden>Palette</button>
+    <div class='site-backdrop fixed inset-0 -z-20'>
+      <div class='site-glow site-glow--primary absolute'></div>
+      <div class='site-glow site-glow--secondary absolute'></div>
+    </div>
+
+    <div class='fixed inset-0 -z-10 overflow-hidden'>
+      <div class='site-star-layer site-star-layer--far absolute'></div>
+      <div class='site-star-layer site-star-layer--mid absolute'></div>
+      <div class='site-star-layer site-star-layer--near absolute'></div>
+    </div>
+
+    <main class='relative z-10 mx-auto max-w-[1120px] px-5 pb-28 pt-8'>
+      <section class='brand-cap' data-brand-cap>
+        <div class='brand-control-panel' data-debug-control hidden>
+          <button class='brand-control-button' type='button' data-brand-animation-toggle>Anim on</button>
+          <button class='brand-control-button' type='button' data-brand-glow-cycle title='Left click increases, right click decreases'>Glow 100%</button>
+          <button class='brand-control-button' type='button' data-brand-opacity-cycle title='Left click increases, right click decreases'>Opacity 100%</button>
+          <button class='brand-control-button' type='button' data-brand-orb-glow-cycle title='Left click increases, right click decreases'>Orbs 100%</button>
+          <button class='brand-control-button' type='button' data-brand-font-cycle>Font 10/18</button>
+        </div>
+        <svg class='brand-cap-svg' data-brand-svg viewBox='0 0 1120 118' role='img' aria-label='DROID MASTER' preserveAspectRatio='none'>
+          <defs>
+            <mask id='brandTextMask' maskUnits='userSpaceOnUse'>
+              <rect width='1120' height='118' fill='black'></rect>
+              <text class='brand-cap-text' data-brand-title x='0' y='98' textLength='1120' lengthAdjust='spacingAndGlyphs' fill='white'>DROID MASTER</text>
+            </mask>
+          </defs>
+          <g mask='url(#brandTextMask)'>
+            <rect width='1120' height='118' fill='#050505'></rect>
+            <g class='brand-cap-effect'>
+              <ellipse class='brand-wisp' rx='26' ry='12' fill='url(#brandWispRoyal)'>
+                <animateMotion dur='1.55s' repeatCount='indefinite' path='M -70 86 C 70 18 150 104 252 54 S 486 18 578 78 S 772 100 902 40 S 1086 22 1190 82'></animateMotion>
+                <animate attributeName='rx' values='22;33;25;37;22' dur='1.55s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='9;15;11;17;9' dur='1.55s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;1;.88;1;0' dur='1.55s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='10' ry='5' fill='url(#brandWispHot)'>
+                <animateMotion dur='1.55s' repeatCount='indefinite' path='M -70 86 C 70 18 150 104 252 54 S 486 18 578 78 S 772 100 902 40 S 1086 22 1190 82'></animateMotion>
+                <animate attributeName='opacity' values='0;1;.92;1;0' dur='.46s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='20' ry='9' fill='url(#brandWispDeep)'>
+                <animateMotion dur='2.25s' begin='-.62s' repeatCount='indefinite' path='M 1190 36 C 1058 106 934 14 792 68 S 520 112 410 38 S 184 8 -86 70'></animateMotion>
+                <animate attributeName='rx' values='16;26;18;23;16' dur='2.25s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='7;13;8;11;7' dur='2.25s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;1;.76;.94;0' dur='2.25s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='7' ry='4' fill='url(#brandWispHot)'>
+                <animateMotion dur='2.25s' begin='-.62s' repeatCount='indefinite' path='M 1190 36 C 1058 106 934 14 792 68 S 520 112 410 38 S 184 8 -86 70'></animateMotion>
+                <animate attributeName='opacity' values='0;1;.82;1;0' dur='.6s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='17' ry='8' fill='url(#brandWispRoyal)'>
+                <animateMotion dur='1.18s' begin='-.28s' repeatCount='indefinite' path='M -60 34 C 102 54 176 18 292 84 S 520 92 640 34 S 852 16 990 74 S 1120 100 1208 44'></animateMotion>
+                <animate attributeName='rx' values='13;22;16;25;13' dur='1.18s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='6;10;7;12;6' dur='1.18s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;1;.72;1;0' dur='1.18s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='13' ry='6' fill='url(#brandWispDeep)'>
+                <animateMotion dur='1.82s' begin='-.94s' repeatCount='indefinite' path='M 84 128 C 164 28 300 34 386 82 S 570 102 666 42 S 842 4 936 54 S 1058 112 1126 22'></animateMotion>
+                <animate attributeName='rx' values='10;17;12;19;10' dur='1.82s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='5;9;6;10;5' dur='1.82s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;.9;.68;1;0' dur='1.82s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='18' ry='9' fill='url(#brandWispHot)'>
+                <animateMotion dur='2.85s' begin='-.18s' repeatCount='indefinite' path='M -84 56 C 120 96 214 4 360 50 S 594 122 742 44 S 972 0 1198 62'></animateMotion>
+                <animate attributeName='rx' values='11;24;14;21;11' dur='2.85s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='5;12;7;10;5' dur='2.85s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;.82;0;1;0' dur='2.85s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='24' ry='11' fill='url(#brandWispRoyal)'>
+                <animateMotion dur='3.35s' begin='-1.4s' repeatCount='indefinite' path='M 1184 96 C 1000 24 854 118 684 58 S 400 12 274 78 S 82 120 -96 34'></animateMotion>
+                <animate attributeName='rx' values='17;30;20;26;17' dur='3.35s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='7;15;9;13;7' dur='3.35s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;1;.64;0;.9;0' dur='3.35s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='15' ry='7' fill='url(#brandWispDeep)'>
+                <animateMotion dur='1.42s' begin='-.74s' repeatCount='indefinite' path='M -72 108 C 76 42 238 40 332 96 S 560 84 654 28 S 802 14 924 84 S 1078 116 1200 26'></animateMotion>
+                <animate attributeName='rx' values='9;19;12;22;9' dur='1.42s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='4;9;5;11;4' dur='1.42s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;.76;1;0;.88;0' dur='1.42s' repeatCount='indefinite'></animate>
+              </ellipse>
+              <ellipse class='brand-wisp' rx='9' ry='5' fill='url(#brandWispHot)'>
+                <animateMotion dur='2.05s' begin='-1.1s' repeatCount='indefinite' path='M 74 10 C 202 72 316 22 438 70 S 640 114 760 48 S 958 18 1118 88'></animateMotion>
+                <animate attributeName='rx' values='6;12;8;15;6' dur='2.05s' repeatCount='indefinite'></animate>
+                <animate attributeName='ry' values='3;7;4;8;3' dur='2.05s' repeatCount='indefinite'></animate>
+                <animate attributeName='opacity' values='0;1;0;.84;0' dur='2.05s' repeatCount='indefinite'></animate>
+              </ellipse>
+            </g>
+          </g>
+          <defs>
+            <radialGradient id='brandWispRoyal' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stop-color='#f3efff' stop-opacity='1'></stop>
+              <stop offset='18%' stop-color='#8d7bff' stop-opacity='1'></stop>
+              <stop offset='42%' stop-color='#3247ff' stop-opacity='.92'></stop>
+              <stop offset='70%' stop-color='#7c3aed' stop-opacity='.72'></stop>
+              <stop offset='100%' stop-color='#030712' stop-opacity='0'></stop>
+            </radialGradient>
+            <radialGradient id='brandWispHot' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stop-color='#ffffff' stop-opacity='1'></stop>
+              <stop offset='34%' stop-color='#d9d2ff' stop-opacity='1'></stop>
+              <stop offset='72%' stop-color='#5b5fff' stop-opacity='.7'></stop>
+              <stop offset='100%' stop-color='#030712' stop-opacity='0'></stop>
+            </radialGradient>
+            <radialGradient id='brandWispDeep' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stop-color='#ece7ff' stop-opacity='1'></stop>
+              <stop offset='22%' stop-color='#6b7cff' stop-opacity='1'></stop>
+              <stop offset='54%' stop-color='#3513c8' stop-opacity='.9'></stop>
+              <stop offset='80%' stop-color='#16004f' stop-opacity='.62'></stop>
+              <stop offset='100%' stop-color='#030712' stop-opacity='0'></stop>
+            </radialGradient>
+          </defs>
+          <text class='brand-cap-text brand-cap-glow-blue' data-brand-title x='0' y='98' textLength='1120' lengthAdjust='spacingAndGlyphs'>DROID MASTER</text>
+          <text class='brand-cap-text brand-cap-glow-orange' data-brand-title x='0' y='98' textLength='1120' lengthAdjust='spacingAndGlyphs'>DROID MASTER</text>
+          <text class='brand-cap-text brand-cap-stroke' data-brand-title x='0' y='98' textLength='1120' lengthAdjust='spacingAndGlyphs'>DROID MASTER</text>
+        </svg>
+      </section>
+      <section class='rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-8 shadow-frame'>
+        <div>
+          <div class='flex justify-end'>
+            <button class='brand-control-button ml-6 mt-4' type='button' data-punchline-font-cycle data-debug-control hidden title='Left click next, right click previous'>Punch 01/15</button>
+          </div>
+          <h1 data-punchline-title class='mt-3 w-full font-body text-[clamp(2.2rem,6.2vw,5rem)] font-bold uppercase leading-[0.92] tracking-[0.02em] text-white'>Iron Man talks to Jarvis.</h1>
+          <p data-punchline-title class='mt-2 w-full font-body text-[clamp(2.09rem,5.89vw,4.75rem)] font-semibold uppercase leading-[0.95] tracking-[0.02em] text-blue0'>Why are you still typing ?</p>
+	          <div class='mt-8 grid gap-4 md:grid-cols-3'>
+            <button type='button' class='terminal-button terminal-button--action terminal-button--send w-full font-display uppercase tracking-[0.08em]' data-copy-command='npx droidmaster web' aria-label='Copy npx command'>
+              <span data-copy-command-label>npx droidmaster web</span>
+            </button>
+            <a href='https://github.com/WiseDragonAI/DroidMaster-Website' class='terminal-button terminal-button--action terminal-button--neutral w-full font-display uppercase tracking-[0.08em]'>
+              <img src='https://cdn.simpleicons.org/github/ffffff' alt='' class='terminal-button__icon' />
+              <span>GitHub</span>
+            </a>
+            <a href='https://discord.gg/QzGH2XwySv' class='terminal-button terminal-button--action terminal-button--neutral w-full font-display uppercase tracking-[0.08em]'>
+              <img src='https://cdn.simpleicons.org/discord/ffffff' alt='' class='terminal-button__icon' />
+              <span>Discord</span>
+            </a>
+          </div>
+	          <div class='hero-separator mt-[35px] h-px w-full'></div>
+	          <h2 class='mt-5 whitespace-nowrap font-body text-[clamp(1.6rem,2.7vw,2.45rem)] font-semibold leading-[1.02] text-white'>Where <span class='text-amber0'>Power users</span> are <span class='text-blue0'>struggling</span>?</h2>
+	          <div class='mt-8 grid gap-5 md:grid-cols-3'>
+          <article class='rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(21,21,21,.96),rgba(15,15,15,.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
+            <div class='primary-soft-surface flex h-[154px] items-center rounded-sm border border-blue0/30 p-2'>
+              <div class='problem-session-grid'>
+                <div class='problem-session'>
+                  <div class='problem-session-stream' data-problem-session-stream></div>
+                </div>
+                <div class='problem-session'>
+                  <div class='problem-session-stream' data-problem-session-stream></div>
+                </div>
+                <div class='problem-session'>
+                  <div class='problem-session-stream' data-problem-session-stream></div>
+                </div>
+                <div class='problem-session'>
+                  <div class='problem-session-stream' data-problem-session-stream></div>
+                </div>
+              </div>
+            </div>
+            <p class='mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>Multi context</span> is now the <span class='text-blue0'>default mode</span>.</p>
+          </article>
+          <article class='rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(21,21,21,.96),rgba(15,15,15,.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
+            <div class='secondary-soft-surface flex h-[154px] items-center rounded-sm border border-amber0/45 p-3'>
+              <div class='cipher-shell'>
+                <div class='cipher-scroll'>
+                  <div class='cipher-block'>ΞΔ_77::0f0f rq//1c 8a8a μμ kk__ zz11 44ff λλ 7d7d qx_qx aa::aa vv00 rr77 mm1m 0x0x c3c3 nn// nn// 2f 2f 9q9q bb__ bb__ xxrr uu88 1010 1010 ΞΞ ΞΞ kk44 kk44 ΔmΔm ff::ff rr__ rr__ z0z0 z0z0 3c3c 3c3c
+qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7 c7c7 μ0 μ0 zz zz 1f_1f 1f_1f rr1 rr1 rr1 uu2 uu2 x9x9 x9x9 __ __ ΔΔ ΔΔ ff77 ff77 6a6a 6a6a
+ΞΔ_77::0f0f rq//1c 8a8a μμ kk__ zz11 44ff λλ 7d7d qx_qx aa::aa vv00 rr77 mm1m 0x0x c3c3 nn// nn// 2f 2f 9q9q bb__ bb__ xxrr uu88 1010 1010 ΞΞ ΞΞ kk44 kk44 ΔmΔm ff::ff rr__ rr__ z0z0 z0z0 3c3c 3c3c
+qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7 c7c7 μ0 μ0 zz zz 1f_1f 1f_1f rr1 rr1 rr1 uu2 uu2 x9x9 x9x9 __ __ ΔΔ ΔΔ ff77 ff77 6a6a 6a6a</div>
+                  <div class='cipher-block' aria-hidden='true'>ΞΔ_77::0f0f rq//1c 8a8a μμ kk__ zz11 44ff λλ 7d7d qx_qx aa::aa vv00 rr77 mm1m 0x0x c3c3 nn// nn// 2f 2f 9q9q bb__ bb__ xxrr uu88 1010 1010 ΞΞ ΞΞ kk44 kk44 ΔmΔm ff::ff rr__ rr__ z0z0 z0z0 3c3c 3c3c
+qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7 c7c7 μ0 μ0 zz zz 1f_1f 1f_1f rr1 rr1 rr1 uu2 uu2 x9x9 x9x9 __ __ ΔΔ ΔΔ ff77 ff77 6a6a 6a6a
+ΞΔ_77::0f0f rq//1c 8a8a μμ kk__ zz11 44ff λλ 7d7d qx_qx aa::aa vv00 rr77 mm1m 0x0x c3c3 nn// nn// 2f 2f 9q9q bb__ bb__ xxrr uu88 1010 1010 ΞΞ ΞΞ kk44 kk44 ΔmΔm ff::ff rr__ rr__ z0z0 z0z0 3c3c 3c3c
+qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7 c7c7 μ0 μ0 zz zz 1f_1f 1f_1f rr1 rr1 rr1 uu2 uu2 x9x9 x9x9 __ __ ΔΔ ΔΔ ff77 ff77 6a6a 6a6a</div>
+                </div>
+              </div>
+            </div>
+            <p class='mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>CLI</span> tools are <span class='text-amber0'>HARD</span> to read.</p>
+          </article>
+          <article class='rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(21,21,21,.96),rgba(15,15,15,.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
+            <div class='primary-soft-surface rounded-sm border border-blue0/30 p-3'>
+              <div class='voice-shell'>
+                <div class='voice-stage'>
+                  <div class='voice-icon-ring'>
+                    <svg viewBox='0 0 96 96' class='h-10 w-10 text-blue0' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+                      <rect x='34' y='16' width='28' height='42' rx='14' stroke='currentColor' stroke-width='6'/>
+                      <path d='M24 44C24 57.2548 34.7452 68 48 68C61.2548 68 72 57.2548 72 44' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
+                      <path d='M48 68V80' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
+                      <path d='M36 80H60' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
+                    </svg>
+                  </div>
+                  <div class='voice-history' aria-hidden='true'>
+                    <div class='voice-history-track'>
+                      <div class='voice-history-set'>
+                        <span class='voice-wave voice-wave--1'></span>
+                        <span class='voice-wave voice-wave--4'></span>
+                        <span class='voice-wave voice-wave--2'></span>
+                        <span class='voice-wave voice-wave--6'></span>
+                        <span class='voice-wave voice-wave--3'></span>
+                        <span class='voice-wave voice-wave--8'></span>
+                        <span class='voice-wave voice-wave--5'></span>
+                        <span class='voice-wave voice-wave--10'></span>
+                        <span class='voice-wave voice-wave--2'></span>
+                        <span class='voice-wave voice-wave--7'></span>
+                        <span class='voice-wave voice-wave--11'></span>
+                        <span class='voice-wave voice-wave--9'></span>
+                        <span class='voice-wave voice-wave--12'></span>
+                        <span class='voice-wave voice-wave--4'></span>
+                        <span class='voice-wave voice-wave--3'></span>
+                        <span class='voice-wave voice-wave--7'></span>
+                      </div>
+                      <div class='voice-history-set' aria-hidden='true'>
+                        <span class='voice-wave voice-wave--1'></span>
+                        <span class='voice-wave voice-wave--4'></span>
+                        <span class='voice-wave voice-wave--2'></span>
+                        <span class='voice-wave voice-wave--6'></span>
+                        <span class='voice-wave voice-wave--3'></span>
+                        <span class='voice-wave voice-wave--8'></span>
+                        <span class='voice-wave voice-wave--5'></span>
+                        <span class='voice-wave voice-wave--10'></span>
+                        <span class='voice-wave voice-wave--2'></span>
+                        <span class='voice-wave voice-wave--7'></span>
+                        <span class='voice-wave voice-wave--11'></span>
+                        <span class='voice-wave voice-wave--9'></span>
+                        <span class='voice-wave voice-wave--12'></span>
+                        <span class='voice-wave voice-wave--4'></span>
+                        <span class='voice-wave voice-wave--3'></span>
+                        <span class='voice-wave voice-wave--7'></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class='voice-meter' aria-hidden='true'>
+                  <div class='voice-meter-fill'></div>
+                </div>
+              </div>
+            </div>
+            <p class='mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>Typing</span> is <span class='text-amber0'>slow</span>, <span class='text-blue0'>speaking</span> is <span class='text-blue0'>fast</span>.</p>
+          </article>
+          </div>
+        </div>
+      </section>
+
+      <section class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-6 shadow-panel'>
+        <h2 class='mb-2 font-body text-[clamp(1.6rem,2.8vw,2.7rem)] font-semibold leading-[1.02] text-white'>One super app: code, files, images and browser</h2>
+        <p class='mb-4 max-w-[78ch] text-[17px] leading-7 text-text1'><span class='text-blue0'>Fast navigation</span> across every work surface, then <span class='text-amber0'>voice prompting</span> to create, edit, inspect, and ship.</p>
+        <div data-workspace-control-demo tabindex='0' class='workspace-control-demo mb-6 rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(18,18,18,.96),rgba(13,13,13,.98))] shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
+          <div class='workspace-control-frame'>
+          <div class='workspace-control-grid'>
+            <div class='screen-window workspace-control-window'>
+                      <div class='screen-window-bar'>
+                        <div class='screen-window-dots'>
+                          <span class='screen-window-dot'></span>
+                          <span class='screen-window-dot'></span>
+                          <span class='screen-window-dot'></span>
+                        </div>
+                <span class='screen-window-title' data-control-status>ready</span>
+                      </div>
+                      <div class='screen-window-body'>
+                        <div class='workspace-switcher' data-workspace-switcher>
+                          <div class='workspace-track' data-workspace-track>
+                            <div class='workspace-slide' data-workspace-slide data-workspace-tone='green'>
+                              <div class='workspace-board workspace-board--four'>
+                        <div class='workspace-column workspace-column--focus' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_r2d2.png' alt='' /></span><span class='workspace-name'>Frontend</span></div><div class='workspace-column-head'></div><div class='workspace-image-card'><img src='/assets/photos/software-developer-at-work.jpg' alt='Developer workspace photo' /></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--mid'></div><div class='workspace-line workspace-line--short'></div></div>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_hk47.png' alt='' /></span><span class='workspace-name'>Backend</span></div><div class='workspace-column-head'></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--short'></div><div class='workspace-line workspace-line--mid'></div></div>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_ig88.png' alt='' /></span><span class='workspace-name'>Agent Ops</span></div><div class='workspace-column-head'></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--mid'></div><div class='workspace-line workspace-line--short'></div></div>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_bb8.png' alt='' /></span><span class='workspace-name'>Data</span></div><div class='workspace-column-head'></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--mid'></div><div class='workspace-line workspace-line--mid'></div></div>
+                              </div>
+                            </div>
+                            <div class='workspace-slide' data-workspace-slide data-workspace-tone='blue'>
+                              <div class='workspace-board workspace-board--four'>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_r5d4.png' alt='' /></span><span class='workspace-name'>Campaigns</span></div><div class='workspace-column-head'></div><div class='workspace-image-card'><img src='/assets/photos/computer-classroom.jpg' alt='Computer workspace photo' /></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--mid'></div><div class='workspace-line workspace-line--short'></div></div>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_c3po.png' alt='' /></span><span class='workspace-name'>Copy</span></div><div class='workspace-column-head'></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--mid'></div></div>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_b1.png' alt='' /></span><span class='workspace-name'>Review</span></div><div class='workspace-column-head'></div><div class='workspace-line workspace-line--mid'></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--short'></div></div>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_bb8.png' alt='' /></span><span class='workspace-name'>Publish</span></div><div class='workspace-column-head'></div><div class='workspace-line workspace-line--long'></div><div class='workspace-line workspace-line--short'></div><div class='workspace-line workspace-line--mid'></div></div>
+                              </div>
+                            </div>
+                            <div class='workspace-slide' data-workspace-slide data-workspace-tone='orange'>
+                              <div class='workspace-board workspace-board--webview'>
+                        <div class='workspace-column workspace-column--span3' data-workspace-column data-static-column='true'><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_grievous.png' alt='' /></span><span class='workspace-name'>Browser View</span></div><div class='workspace-column-head'></div><div class='workspace-webview' data-workspace-webview data-reloading='false' data-changed='false'><div class='workspace-side-project'><div class='workspace-side-project-brand'><img class='workspace-side-project-logo' data-side-project-logo src='/assets/droids/droid_grievous.png' alt='' /><span class='workspace-side-project-title'>SIDE PROJECT</span></div></div></div></div>
+                        <div class='workspace-column' data-workspace-column><div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_r2d2.png' alt='' /></span><span class='workspace-name'>Verify</span></div><div class='workspace-column-head'></div><div class='workspace-image-card'><img src='/assets/photos/server-racks-nersc.jpg' alt='Server rack operations photo' /></div><div class='workspace-line workspace-line--mid'></div><div class='workspace-line workspace-line--short'></div><div class='workspace-line workspace-line--short'></div></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+            </div>
+            <div class='workspace-control-side'>
+              <div class='workspace-keyboard-widget'>
+                <span class='workspace-keyboard-status' data-control-step>READY</span>
+                <div class='workspace-keyboard-grid'>
+                  <div class='workspace-keyboard-row'>
+                    <button type='button' data-control-key='q' class='workspace-key'>Q</button>
+                    <button type='button' data-control-key='w' class='workspace-key'>W</button>
+                    <button type='button' data-control-key='e' class='workspace-key'>E</button>
+                    <button type='button' data-control-key='r' class='workspace-key workspace-key--voice'>R</button>
+                  </div>
+                  <div class='workspace-keyboard-row workspace-keyboard-row--home'>
+                    <button type='button' data-control-key='a' class='workspace-key'>A</button>
+                    <button type='button' data-control-key='s' class='workspace-key'>S</button>
+                    <button type='button' data-control-key='d' class='workspace-key'>D</button>
+                  </div>
+                </div>
+              </div>
+              <div class='voice-shell workspace-voice-widget' data-voice-widget>
+                          <div class='voice-stage'>
+                            <div class='voice-icon-ring'>
+                              <svg viewBox='0 0 96 96' class='h-10 w-10 text-blue0' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+                                <rect x='34' y='16' width='28' height='42' rx='14' stroke='currentColor' stroke-width='6'/>
+                                <path d='M24 44C24 57.2548 34.7452 68 48 68C61.2548 68 72 57.2548 72 44' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
+                                <path d='M48 68V80' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
+                                <path d='M36 80H60' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
+                              </svg>
+                            </div>
+                            <div class='voice-history' aria-hidden='true'>
+                              <div class='voice-history-track'>
+                                <div class='voice-history-set'>
+                                  <span class='voice-wave voice-wave--1'></span>
+                                  <span class='voice-wave voice-wave--4'></span>
+                                  <span class='voice-wave voice-wave--2'></span>
+                                  <span class='voice-wave voice-wave--6'></span>
+                                  <span class='voice-wave voice-wave--3'></span>
+                                  <span class='voice-wave voice-wave--8'></span>
+                                  <span class='voice-wave voice-wave--5'></span>
+                                  <span class='voice-wave voice-wave--10'></span>
+                                  <span class='voice-wave voice-wave--2'></span>
+                                  <span class='voice-wave voice-wave--7'></span>
+                                  <span class='voice-wave voice-wave--11'></span>
+                                  <span class='voice-wave voice-wave--9'></span>
+                                  <span class='voice-wave voice-wave--12'></span>
+                                  <span class='voice-wave voice-wave--4'></span>
+                                  <span class='voice-wave voice-wave--3'></span>
+                                  <span class='voice-wave voice-wave--7'></span>
+                                </div>
+                                <div class='voice-history-set' aria-hidden='true'>
+                                  <span class='voice-wave voice-wave--1'></span>
+                                  <span class='voice-wave voice-wave--4'></span>
+                                  <span class='voice-wave voice-wave--2'></span>
+                                  <span class='voice-wave voice-wave--6'></span>
+                                  <span class='voice-wave voice-wave--3'></span>
+                                  <span class='voice-wave voice-wave--8'></span>
+                                  <span class='voice-wave voice-wave--5'></span>
+                                  <span class='voice-wave voice-wave--10'></span>
+                                  <span class='voice-wave voice-wave--2'></span>
+                                  <span class='voice-wave voice-wave--7'></span>
+                                  <span class='voice-wave voice-wave--11'></span>
+                                  <span class='voice-wave voice-wave--9'></span>
+                                  <span class='voice-wave voice-wave--12'></span>
+                                  <span class='voice-wave voice-wave--4'></span>
+                                  <span class='voice-wave voice-wave--3'></span>
+                                  <span class='voice-wave voice-wave--7'></span>
+                                </div>
+                              </div>
+                  </div>
+                </div>
+                        <div class='voice-meter' aria-hidden='true'>
+                            <div class='voice-meter-fill'></div>
+                          </div>
+                        </div>
+                      </div>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <section class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-6 shadow-panel'>
+        <p class='font-display text-[11px] uppercase tracking-[0.18em] text-blue0'>Topology</p>
+        <h2 class='mt-2 font-body text-[clamp(1.45rem,2.7vw,2.2rem)] font-bold uppercase leading-none text-white'>Run local or cloud or both, desktop and mobile</h2>
+        <p class='mt-3 max-w-[82ch] text-[17px] leading-7 text-text1'>Operate from your desktop browser, keep execution inside a local Docker container or a remote VPS, and continue from mobile on the same synchronized workspace.</p>
+
+        <div class='topology-diagram mt-5' aria-label='DroidMaster local cloud mobile topology diagram'>
+          <div class='topology-node topology-node--desktop'>
+            <div class='topology-node-label'>Desktop Browser</div>
+            <div class='topology-computer'>
+              <div class='topology-browser-bar'>
+                <span></span>
+                <span></span>
+                <span></span>
+                <strong>workspace.local</strong>
+              </div>
+              <div class='topology-workspace-mini'>
+                <div class='topology-mini-column topology-mini-column--focus workspace-column workspace-column--focus'>
+                  <div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_r2d2.png' alt='' /></span><span class='workspace-name'>Code</span></div>
+                  <div class='workspace-column-head'></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                </div>
+                <div class='topology-mini-column workspace-column'>
+                  <div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_c3po.png' alt='' /></span><span class='workspace-name'>Files</span></div>
+                  <div class='workspace-column-head'></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                </div>
+                <div class='topology-mini-column workspace-column'>
+                  <div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_bb8.png' alt='' /></span><span class='workspace-name'>Browser</span></div>
+                  <div class='workspace-column-head'></div>
+                  <div class='workspace-image-card'><img src='/assets/photos/computer-classroom.jpg' alt='' /></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class='topology-link topology-link--left' aria-hidden='true'></div>
+
+          <div class='topology-node topology-node--server'>
+            <div class='topology-node-label'>Execution Server</div>
+            <div class='topology-server'>
+              <div class='topology-server-core'>
+                <span class='topology-server-pulse'></span>
+                <strong>Docker</strong>
+                <small>Local machine or remote VPS</small>
+              </div>
+              <div class='topology-server-row'><span></span><span></span><span></span></div>
+              <div class='topology-server-row'><span></span><span></span><span></span></div>
+            </div>
+          </div>
+
+          <div class='topology-link topology-link--right' aria-hidden='true'></div>
+
+          <div class='topology-node topology-node--mobile'>
+            <div class='topology-node-label'>Mobile App</div>
+            <div class='topology-phone'>
+              <div class='topology-phone-speaker'></div>
+              <div class='topology-phone-screen'>
+                <div class='topology-mobile-column workspace-column workspace-column--focus'>
+                  <div class='workspace-identity'><span class='workspace-icon' aria-hidden='true'><img src='/assets/droids/droid_hk47.png' alt='' /></span><span class='workspace-name'>Live Workspace</span></div>
+                  <div class='workspace-column-head'></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                  <div class='workspace-skeleton' data-seeded='true'><span></span><span></span><span></span></div>
+                </div>
+              </div>
+              <div class='topology-phone-home'></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-6 shadow-panel'>
+        <p class='font-display text-[11px] uppercase tracking-[0.18em] text-blue0'>The Stack</p>
+        <h2 class='mt-2 font-body text-[clamp(1.45rem,2.7vw,2.2rem)] font-bold uppercase leading-none text-white'>Use the tools you already trust</h2>
+        <p class='mt-3 max-w-[84ch] text-[17px] leading-7 text-text1'>DroidMaster is the surface around your agents, files, browser, and generated media. Bring your own model subscription, keep local access scoped, and extend the same workspace to cloud and mobile.</p>
+
+        <div class='feature-carousel mt-5' aria-label='DroidMaster feature carousel'>
+          <div class='feature-carousel-stage'>
+            <article class='feature-slide feature-slide--active'>
+              <div class='feature-slide-copy'>
+                <span>01 / Subscription</span>
+                <h3>Use your own Codex or Claude</h3>
+                <p>Keep the subscription you already pay for while DroidMaster adds the operating surface around it.</p>
+              </div>
+              <div class='feature-slide-visual feature-slide-visual--providers' aria-hidden='true'>
+                <div class='feature-provider-card'>Codex</div>
+                <div class='feature-provider-pulse'></div>
+                <div class='feature-provider-card'>Claude</div>
+              </div>
+            </article>
+            <article class='feature-slide'>
+              <div class='feature-slide-copy'>
+                <span>02 / Local Scope</span>
+                <h3>Containerized locally</h3>
+                <p>Expose only the folders, projects, and credentials you feel safe sharing with the runtime.</p>
+              </div>
+              <div class='feature-slide-visual feature-slide-visual--containers' aria-hidden='true'>
+                <div class='feature-container-stack'><span></span><span></span><span></span></div>
+                <div class='feature-scope-lines'><span></span><span></span><span></span></div>
+              </div>
+            </article>
+            <article class='feature-slide'>
+              <div class='feature-slide-copy'>
+                <span>03 / Images</span>
+                <h3>OpenRouter image tools</h3>
+                <p>Generate images in the same workspace where code, files, browser state, and chat history live.</p>
+              </div>
+              <div class='feature-slide-visual feature-slide-visual--images' aria-hidden='true'>
+                <div class='feature-image-frame'></div>
+                <div class='feature-image-frame feature-image-frame--small'></div>
+              </div>
+            </article>
+            <article class='feature-slide'>
+              <div class='feature-slide-copy'>
+                <span>04 / Browser</span>
+                <h3>In-app browser</h3>
+                <p>Inspect the product, review pages, and ask the agent to change what you see without leaving the app.</p>
+              </div>
+              <div class='feature-slide-visual feature-slide-visual--browser' aria-hidden='true'>
+                <div class='feature-browser-bar'><span></span><span></span><span></span></div>
+                <div class='feature-browser-page'><strong>SIDE PROJECT</strong></div>
+              </div>
+            </article>
+            <article class='feature-slide'>
+              <div class='feature-slide-copy'>
+                <span>05 / Cloud</span>
+                <h3>Deploy and sync mobile</h3>
+                <p>Deploy to cloud, access from the mobile app, and keep the remote surface synced with local work.</p>
+              </div>
+              <div class='feature-slide-visual feature-slide-visual--cloud' aria-hidden='true'>
+                <div class='feature-cloud-node'>Local</div>
+                <div class='feature-cloud-link'></div>
+                <div class='feature-cloud-node'>Mobile</div>
+              </div>
+            </article>
+          </div>
+          <div class='feature-carousel-dots' aria-hidden='true'>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </section>
+
+      <section id='faq' class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.82),rgba(23,23,23,.86))] p-8 shadow-panel'>
+        <p class='font-display text-[11px] uppercase tracking-[0.18em] text-amber0'>FAQ</p>
+        <h2 class='mt-2 font-body text-[clamp(1.35rem,2.8vw,2.1rem)] font-bold uppercase leading-none text-white'>Frequently asked questions</h2>
+        <div class='faq-list mt-5'>
+          <details class='faq-card' open>
+            <summary><span>Do I need a new AI subscription?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>No new subscription required.</strong></li>
+                <li>Bring the subscription you already use.</li>
+                <li>DroidMaster supports <strong>Codex for OpenAI</strong> and <strong>Claude Code headless</strong>.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>Can I use it with Claude Code?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>Yes.</strong> DroidMaster wraps <code>claude -p</code>.</li>
+                <li>That is the <strong>headless version of Claude Code</strong>.</li>
+                <li>It uses <strong>approved official Claude tooling</strong>, not API workarounds.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>How does OpenAI subscription support work?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>OpenAI subscription support uses Codex.</strong></li>
+                <li>DroidMaster adds faster workspace navigation around it.</li>
+                <li>Files, browser context, and <strong>voice prompting</strong> stay in one surface.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>Can I use Codex and Claude at the same time?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>Yes.</strong> DroidMaster supports multi-account auth.</li>
+                <li>Create a conversation with any supported provider.</li>
+                <li>Keep <strong>separate provider identities</strong> available in the same app.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>What can DroidMaster access locally?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>Only what you expose.</strong></li>
+                <li>Choose the projects, folders, and credentials available to the container.</li>
+                <li>Grant runtime access only where you feel safe.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>Can it generate images?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>Yes.</strong> Image generation tools are included through OpenRouter.</li>
+                <li>Generated media lives next to code, files, chat history, and browser work.</li>
+                <li>The image output stays inside the same operator workspace.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>Can I use it from mobile?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>Yes.</strong> Deploy the app to cloud.</li>
+                <li>Connect the mobile app.</li>
+                <li>Keep the remote surface synced with your local workspace.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>What upcoming features are planned?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>Local voice transcription</strong> support.</li>
+                <li><strong>More coding agents</strong> in the provider roster.</li>
+                <li>Choice between a <strong>local LLM</strong> and a cloud provider per workspace.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>Is DroidMaster only for solo power users?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>No.</strong> The open-source path is built for operators.</li>
+                <li>The enterprise path adds collaborative content pipelines.</li>
+                <li>Reviews, assets, and handoffs share the same operating surface.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>Why include an in-app browser?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li>The browser keeps <strong>inspection and change requests</strong> together.</li>
+                <li>Review the live product state.</li>
+                <li>Prompt the agent without switching contexts.</li>
+              </ul>
+            </div>
+          </details>
+          <details class='faq-card'>
+            <summary><span>Can DroidMaster run locally or in the cloud?</span></summary>
+            <div class='faq-card-body'>
+              <ul>
+                <li><strong>Yes.</strong> Run locally for scoped machine access.</li>
+                <li>Deploy to your own infrastructure for remote access.</li>
+                <li>Use cloud mode when you need <strong>mobile continuity</strong>.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </main>
+  </body>
+</html>
