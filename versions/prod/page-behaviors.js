@@ -85,25 +85,13 @@
               const baseline = height - bottomPadding;
               const maxWaveHeight = Math.max(1, height - topPadding - bottomPadding);
               const step = values.length > 1 ? width / (values.length - 1) : width;
-              const readRgbTriplet = (variableName, fallback) => {
-                const rawValue = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-                const channels = rawValue.split(/\s+/).map((channel) => Number(channel));
-                if (channels.length !== 3 || channels.some((channel) => !Number.isFinite(channel))) {
-                  return fallback;
-                }
-                return channels;
-              };
-              const rgba = (channels, alpha) => `rgba(${channels.join(', ')}, ${alpha})`;
-              const accentRgb = readRgbTriplet('--accent-rgb', [107, 63, 158]);
-              const accentSoftRgb = readRgbTriplet('--accent-soft-rgb', [99, 58, 145]);
-              const accentMutedRgb = readRgbTriplet('--accent-muted-rgb', [70, 41, 103]);
               const fill = context.createLinearGradient(0, topPadding, 0, baseline);
-              fill.addColorStop(0, rgba(accentRgb, 0.92));
-              fill.addColorStop(0.62, rgba(accentSoftRgb, 0.74));
-              fill.addColorStop(1, rgba(accentMutedRgb, 0.94));
+              fill.addColorStop(0, 'rgba(229, 128, 76, 0.92)');
+              fill.addColorStop(0.62, 'rgba(195, 96, 58, 0.74)');
+              fill.addColorStop(1, 'rgba(110, 49, 32, 0.94)');
 
               context.save();
-              context.shadowColor = rgba(accentRgb, 0.24);
+              context.shadowColor = 'rgba(229, 128, 76, 0.24)';
               context.shadowBlur = 14 * ratio;
               context.beginPath();
               context.moveTo(0, baseline);
@@ -129,7 +117,7 @@
               context.fill();
               context.restore();
 
-              context.strokeStyle = rgba(accentRgb, 0.28);
+              context.strokeStyle = 'rgba(255, 187, 129, 0.28)';
               context.lineWidth = 1 * ratio;
               context.beginPath();
               values.forEach((value, index) => {
@@ -166,87 +154,6 @@
         };
 
         window.addEventListener('load', setupVoiceSpectrumWidgets);
-      })();
-
-      // WHAT: Drive the canonical voice graph and voicometer used by the workspace mockup.
-      (() => {
-        const setupCanonicalVoiceDock = () => {
-          document.querySelectorAll('[data-v1-wave-panel]').forEach((panel, panelIndex) => {
-            if (!(panel instanceof HTMLElement) || panel.dataset.v1WaveReady === 'true') return;
-            panel.dataset.v1WaveReady = 'true';
-            const areaPath = panel.querySelector('.v1-wave-area-path');
-            const corePath = panel.querySelector('.v1-wave-core-path');
-            const meterFill = panel.parentElement?.querySelector('.v1-meter-fill');
-            if (!areaPath || !corePath || !(meterFill instanceof HTMLElement)) return;
-
-            const sampleCount = 36;
-            const samples = Array.from({ length: sampleCount }, () => 0.12);
-            const baseline = 100;
-            let smoothed = 0.24;
-            let lastFrame = 0;
-
-            const isActive = () => {
-              const widget = panel.closest('.workspace-voice-widget');
-              return !widget || widget.dataset.active === 'true';
-            };
-
-            const amplitude = (elapsedSeconds) => {
-              const phrase = Math.sin(elapsedSeconds * 2.2 + panelIndex * 0.7) * 0.5 + 0.5;
-              const syllable = Math.sin(elapsedSeconds * 8.9 + panelIndex * 1.3) * 0.5 + 0.5;
-              const consonant = Math.sin(elapsedSeconds * 19.1 + panelIndex * 2.1) * 0.5 + 0.5;
-              return Math.min(1, 0.12 + phrase * 0.46 + syllable * 0.28 + consonant * 0.14);
-            };
-
-            const buildPath = (values, scale) => {
-              const step = 1000 / (values.length - 1);
-              const points = values.map((value, index) => {
-                const x = index * step;
-                const y = baseline - Math.pow(value, 0.78) * 92 * scale;
-                return [x, y];
-              });
-              const line = points.reduce((path, point, index) => {
-                if (index === 0) return `M${point[0].toFixed(1)} ${baseline}`;
-                const previous = points[index - 1];
-                const cx = ((previous[0] + point[0]) / 2).toFixed(1);
-                const cy = ((previous[1] + point[1]) / 2).toFixed(1);
-                return `${path} Q${previous[0].toFixed(1)} ${previous[1].toFixed(1)} ${cx} ${cy}`;
-              }, '');
-              return `${line} T1000 ${points[points.length - 1][1].toFixed(1)} L1000 ${baseline} H0 Z`;
-            };
-
-            const drawEmpty = () => {
-              areaPath.setAttribute('d', 'M0 100H1000V100H0z');
-              corePath.setAttribute('d', 'M0 100H1000V100H0z');
-              meterFill.style.height = '0%';
-            };
-
-            const tick = (now) => {
-              if (!isActive()) {
-                samples.fill(0.1);
-                smoothed = 0.12;
-                drawEmpty();
-                window.requestAnimationFrame(tick);
-                return;
-              }
-              if (now - lastFrame >= 1000 / 30) {
-                lastFrame = now;
-                const elapsedSeconds = now / 1000;
-                const next = amplitude(elapsedSeconds);
-                smoothed += (next - smoothed) * 0.22;
-                samples.push(smoothed);
-                while (samples.length > sampleCount) samples.shift();
-                areaPath.setAttribute('d', buildPath(samples, 1));
-                corePath.setAttribute('d', buildPath(samples, .38));
-                meterFill.style.height = `${Math.round(18 + smoothed * 76)}%`;
-              }
-              window.requestAnimationFrame(tick);
-            };
-
-            window.requestAnimationFrame(tick);
-          });
-        };
-
-        window.addEventListener('load', setupCanonicalVoiceDock);
       })();
 
       // WHAT: Let the operator cycle through robotic Google Fonts for the masthead.
@@ -570,13 +477,12 @@
             hueKey: 'droidmaster-primary-hue',
             saturationKey: 'droidmaster-primary-saturation',
             luminosityKey: 'droidmaster-primary-luminosity',
-              css: {
-                hue: '--primary-h',
-                saturation: '--primary-s',
-                luminosity: '--primary-v',
-                rgb: '--primary-rgb',
-                soft: '--primary-soft-rgb',
-                ui: '--primary-ui-rgb',
+            css: {
+              hue: '--primary-h',
+              saturation: '--primary-s',
+              rgb: '--primary-rgb',
+              soft: '--primary-soft-rgb',
+              ui: '--primary-ui-rgb',
               muted: '--primary-muted-rgb'
             },
             defaults: { hue: 204, saturation: 95, luminosity: 100 },
@@ -584,33 +490,32 @@
           },
           secondary: {
             label: 'Secondary Accent',
-            note: 'Auto-cycles between hue 264 and 276 when animations are on. Turn animations off to tune hue manually.',
+            note: 'Auto-cycles between hue 30 and 40 when animations are on. Turn animations off to tune hue manually.',
             hueKey: 'droidmaster-accent-hue',
             saturationKey: 'droidmaster-accent-saturation',
             luminosityKey: 'droidmaster-accent-luminosity',
-              css: {
-                hue: '--accent-h',
-                saturation: '--accent-s',
-                luminosity: '--accent-v',
-                rgb: '--accent-rgb',
-                soft: '--accent-soft-rgb',
-                ui: '--accent-ui-rgb',
+            css: {
+              hue: '--accent-h',
+              saturation: '--accent-s',
+              rgb: '--accent-rgb',
+              soft: '--accent-soft-rgb',
+              ui: '--accent-ui-rgb',
               muted: '--accent-muted-rgb'
             },
-            defaults: { hue: 268, saturation: 60, luminosity: 62 },
+            defaults: { hue: 30, saturation: 82, luminosity: 88 },
             valueProfile: { rgb: 1, soft: .92, ui: .82, muted: .65 }
           }
         };
         const animatedHueRanges = {
           primary: { min: 204, max: 222, halfPeriodMs: 7000 },
-          secondary: { min: 264, max: 276, halfPeriodMs: 9000 }
+          secondary: { min: 30, max: 40, halfPeriodMs: 9000 }
         };
 
         const targetStorageKey = 'droidmaster-color-target';
         const animationStorageKey = 'droidmaster-animations-enabled';
         const tunerHiddenStorageKey = 'droidmaster-color-tuner-hidden';
         const paletteVersionKey = 'droidmaster-palette-version';
-        const paletteVersion = '2026-05-02-primary-204-222-secondary-purple-268-60-62';
+        const paletteVersion = '2026-04-30-primary-204-222-secondary-30-40';
         const offerGlowStorageKey = 'droidmaster-offer-glow-power';
         const triangleWave = (timestamp, halfPeriodMs) => {
           const fullPeriodMs = halfPeriodMs * 2;
@@ -641,7 +546,6 @@
           const root = document.documentElement;
           root.style.setProperty(target.css.hue, String(hue));
           root.style.setProperty(target.css.saturation, String(saturation));
-          root.style.setProperty(target.css.luminosity, String(luminosity));
           root.style.setProperty(target.css.rgb, accentRgb);
           root.style.setProperty(target.css.soft, accentSoftRgb);
           root.style.setProperty(target.css.ui, accentUiRgb);
@@ -797,21 +701,15 @@
           renderAnimationMode();
           setOfferGlow(window.localStorage.getItem(offerGlowStorageKey) ?? '72', false);
 
-          const rootStyles = getComputedStyle(document.documentElement);
-          const readRootNumber = (propertyName, fallback) => {
-            const rawValue = rootStyles.getPropertyValue(propertyName).trim();
-            const value = Number(rawValue);
-            return Number.isFinite(value) ? value : fallback;
-          };
           const stateByTarget = Object.fromEntries(
             Object.entries(colorTargets).map(([name, target]) => {
               const rawHue = window.localStorage.getItem(target.hueKey);
               const rawSaturation = window.localStorage.getItem(target.saturationKey);
               const rawLuminosity = window.localStorage.getItem(target.luminosityKey);
               const state = setColorState(name, {
-                hue: rawHue == null ? readRootNumber(target.css.hue, target.defaults.hue) : rawHue,
-                saturation: rawSaturation == null ? readRootNumber(target.css.saturation, target.defaults.saturation) : rawSaturation,
-                luminosity: rawLuminosity == null ? readRootNumber(target.css.luminosity, target.defaults.luminosity) : rawLuminosity
+                hue: rawHue == null ? target.defaults.hue : rawHue,
+                saturation: rawSaturation == null ? target.defaults.saturation : rawSaturation,
+                luminosity: rawLuminosity == null ? target.defaults.luminosity : rawLuminosity
               }, false);
               return [name, state];
             })

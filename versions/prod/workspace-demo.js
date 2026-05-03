@@ -246,30 +246,17 @@ function setupWorkspaceControlDemo(section) {
       "w", "w",
     ];
     let index = 0;
-    let loopResetPrepared = false;
     const advance = () => {
       if (index === 0) {
-        if (loopResetPrepared) {
-          loopResetPrepared = false;
-        } else {
-          resetState();
-          seedColumnSkeletons();
-          render();
-        }
+        resetState();
+        seedColumnSkeletons();
+        render();
       }
       const key = sequence[index];
       const nextKey = sequence[(index + 1) % sequence.length];
-      if (key === "w" && index === sequence.length - 1) {
-        resetState();
-        state.workspaceIndex = 1;
-        seedColumnSkeletons();
-        render();
-        loopResetPrepared = true;
-      }
       applyKey(key);
-      const blueImagePause = key === "r" && state.workspaceIndex === 1 && state.voiceActive === false;
       index = (index + 1) % sequence.length;
-      const delay = blueImagePause ? 3130 : key === "r" && nextKey === "r" ? 1800 : key === "r" ? 2300 : key === "q" && nextKey === "q" ? 230 : index === 0 ? 1300 : 620;
+      const delay = key === "r" && nextKey === "r" ? 1800 : key === "r" ? 2300 : key === "q" && nextKey === "q" ? 230 : index === 0 ? 1300 : 620;
       window.setTimeout(advance, delay);
     };
     window.setTimeout(advance, 500);

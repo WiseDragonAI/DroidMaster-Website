@@ -36,8 +36,10 @@ Static commercial website for DroidMaster.
 
 ## Pages
 
-1. `index.html` is the canonical public website.
+1. `index.html` is the canonical public website and serves as Version 05 in the switcher.
 2. `archive.html` keeps the removed lower commercial sections for reference.
+3. `versions/design-system/index.html` is the Version 04 Business OS design-system adaptation.
+4. `versions/index.html` is the selector for Versions 01-05.
 
 ## Debug Controls
 

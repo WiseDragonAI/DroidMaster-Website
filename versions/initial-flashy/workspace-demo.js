@@ -9,19 +9,19 @@ function setupWorkspaceControlDemo(section) {
   const keys = Array.from(section.querySelectorAll("[data-control-key]"));
   const voice = section.querySelector("[data-voice-widget]");
   const webview = section.querySelector("[data-workspace-webview]");
-  const webviewLogo = section.querySelector("[data-side-project-logo]");
+  const webviewImage = section.querySelector("[data-workspace-webview-image]");
   const status = section.querySelector("[data-control-status]");
   const stepLabel = section.querySelector("[data-control-step]");
   if (!track || !slides.length || !keys.length || !voice) return null;
 
   const state = {
     workspaceIndex: 0,
-    columnIndex: 0,
+    columnIndex: 1,
     voiceActive: false,
     skeletonCount: 0,
     scrollByColumn: new Map(),
     key: "",
-    step: "ready",
+    step: "Ready",
   };
   const scrollStepPx = 48;
   const maxScrollPx = 288;
@@ -42,13 +42,50 @@ function setupWorkspaceControlDemo(section) {
     skeleton.innerHTML = skeletonMarkup;
     stack.appendChild(skeleton);
   };
-  const appendGeneratedImageCard = (stack) => {
+  const generatedImageForWorkspace = (workspaceIndex) => {
+    if (workspaceIndex !== 0) return null;
+    return {
+      src: "/assets/lore/rick-and-morty/rick-and-morty-air-force-wong.png",
+      alt: "Generated Rick and Morty image concept",
+    };
+  };
+  const getOrCreateStack = (column) => {
+    if (!column || column.dataset.staticColumn === "true") return null;
+    let viewport = column.querySelector(".workspace-chat-viewport");
+    if (!viewport) {
+      viewport = document.createElement("div");
+      viewport.className = "workspace-chat-viewport";
+      column.appendChild(viewport);
+    }
+    let stack = viewport.querySelector(".workspace-chat-stack");
+    if (!stack) {
+      stack = document.createElement("div");
+      stack.className = "workspace-chat-stack";
+      viewport.appendChild(stack);
+    }
+    return stack;
+  };
+  const appendGeneratedImageCard = (stack, workspaceIndex) => {
+    const image = generatedImageForWorkspace(workspaceIndex);
+    if (!image) return;
     const card = document.createElement("div");
     card.className = "workspace-image-card workspace-image-card--conversation workspace-image-card--generated";
-    card.innerHTML = "<img src='/assets/photos/software-developer-at-work.jpg' alt='Generated concept image' />";
+    card.innerHTML = `<img src='${image.src}' alt='${image.alt}' />`;
     stack.appendChild(card);
   };
-  const appendLoaderCard = (stack, scrollKey) => {
+  const appendGeneratedDiffCard = (stack) => {
+    const card = document.createElement("div");
+    card.className = "workspace-diff-card workspace-diff-card--conversation workspace-diff-card--generated";
+    card.innerHTML = `
+      <span class='workspace-diff-line workspace-diff-line--remove workspace-diff-line--long'></span>
+      <span class='workspace-diff-line workspace-diff-line--add workspace-diff-line--mid'></span>
+      <span class='workspace-diff-line workspace-diff-line--add workspace-diff-line--long'></span>
+      <span class='workspace-diff-line workspace-diff-line--remove workspace-diff-line--short'></span>
+      <span class='workspace-diff-line workspace-diff-line--add workspace-diff-line--mid'></span>
+    `;
+    stack.appendChild(card);
+  };
+  const appendLoaderCard = (stack, scrollKey, onComplete) => {
     const loader = document.createElement("div");
     loader.className = "workspace-loader-card";
     loader.innerHTML = "<span class='workspace-loader-ring'></span><span class='workspace-loader-line'></span>";
@@ -57,36 +94,42 @@ function setupWorkspaceControlDemo(section) {
     render();
     window.setTimeout(() => {
       loader.remove();
-      appendGeneratedImageCard(stack);
+      onComplete?.();
       state.scrollByColumn.set(scrollKey, 0);
       render();
     }, 1150);
   };
-  const triggerWebviewReload = () => {
+  const triggerWebviewReload = (image) => {
     if (!webview) return;
     webview.dataset.reloading = "true";
     webview.dataset.changed = "false";
     window.setTimeout(() => {
       webview.dataset.reloading = "false";
       webview.dataset.changed = "true";
-      if (webviewLogo) webviewLogo.src = "/assets/droids/droid_bb8.png";
-      state.step = "Side project preview updated";
+      if (webviewImage && image) {
+        webviewImage.src = image.src;
+        webviewImage.alt = image.alt;
+      }
+      state.step = "Fan site hero updated";
       render();
     }, 1050);
   };
   const resetState = () => {
     state.workspaceIndex = 0;
-    state.columnIndex = 0;
+    state.columnIndex = 1;
     state.voiceActive = false;
     state.skeletonCount = 0;
     state.scrollByColumn = new Map();
     state.key = "";
-    state.step = "ready";
+    state.step = "Ready";
     if (webview) {
       webview.dataset.reloading = "false";
       webview.dataset.changed = "false";
     }
-    if (webviewLogo) webviewLogo.src = "/assets/droids/droid_grievous.png";
+    if (webviewImage) {
+      webviewImage.src = "/assets/lore/rick-and-morty/rick-and-morty-s08e01.jpg";
+      webviewImage.alt = "Rick and Morty blog hero art";
+    }
   };
 
   const seedColumnSkeletons = () => {
@@ -94,26 +137,31 @@ function setupWorkspaceControlDemo(section) {
       Array.from(slide.querySelectorAll("[data-workspace-column]")).forEach((column, columnIndex) => {
         if (column.dataset.staticColumn === "true") return;
         const existingStack = column.querySelector(".workspace-chat-stack");
-        const imageCard = column.querySelector(".workspace-image-card");
+        const sourceCard = column.querySelector(".workspace-image-card, .workspace-diff-card");
         if (existingStack) {
-          if (imageCard) column.appendChild(imageCard);
+          if (sourceCard) column.appendChild(sourceCard);
           column.querySelector(".workspace-chat-viewport")?.remove();
         }
         const viewport = document.createElement("div");
         viewport.className = "workspace-chat-viewport";
         const stack = document.createElement("div");
         stack.className = "workspace-chat-stack";
-        const sourceImageCard = column.querySelector(":scope > .workspace-image-card");
+        const conversationCard = column.querySelector(":scope > .workspace-image-card, :scope > .workspace-diff-card");
         const rows = 6 + (columnIndex % 2);
         const imageIndex = Math.max(1, rows - 2);
         for (let index = 0; index < rows; index += 1) {
-          if (sourceImageCard && index === imageIndex) {
-            sourceImageCard.classList.add("workspace-image-card--conversation");
-            stack.appendChild(sourceImageCard);
+          if (conversationCard && index === imageIndex) {
+            if (conversationCard.classList.contains("workspace-image-card")) {
+              conversationCard.classList.add("workspace-image-card--conversation");
+            }
+            if (conversationCard.classList.contains("workspace-diff-card")) {
+              conversationCard.classList.add("workspace-diff-card--conversation");
+            }
+            stack.appendChild(conversationCard);
           }
           appendSeedSkeleton(stack);
         }
-        if (sourceImageCard && sourceImageCard.parentElement !== stack) stack.appendChild(sourceImageCard);
+        if (conversationCard && conversationCard.parentElement !== stack) stack.appendChild(conversationCard);
         viewport.appendChild(stack);
         column.appendChild(viewport);
       });
@@ -148,19 +196,8 @@ function setupWorkspaceControlDemo(section) {
 
   const addConversationCard = () => {
     const column = focusedColumn();
-    if (!column || column.dataset.staticColumn === "true") return null;
-    let viewport = column.querySelector(".workspace-chat-viewport");
-    if (!viewport) {
-      viewport = document.createElement("div");
-      viewport.className = "workspace-chat-viewport";
-      column.appendChild(viewport);
-    }
-    let stack = viewport.querySelector(".workspace-chat-stack");
-    if (!stack) {
-      stack = document.createElement("div");
-      stack.className = "workspace-chat-stack";
-      viewport.appendChild(stack);
-    }
+    const stack = getOrCreateStack(column);
+    if (!column || !stack) return null;
     const skeleton = document.createElement("div");
     skeleton.className = "workspace-skeleton workspace-skeleton--prompt";
     skeleton.innerHTML = skeletonMarkup;
@@ -173,12 +210,55 @@ function setupWorkspaceControlDemo(section) {
   const handleVoiceNoteSent = (result) => {
     if (!result) return;
     if (state.workspaceIndex === 2) {
-      state.step = "Side project update requested";
-      triggerWebviewReload();
+      const originColumn = result.column;
+      const originKey = columnKey();
+      state.step = "Droid launched";
+      appendLoaderCard(result.stack, originKey, () => {
+        appendGeneratedDiffCard(result.stack);
+        state.step = "First droid finished";
+        render();
+      });
+      window.setTimeout(() => {
+        state.columnIndex = clamp(state.columnIndex + 1, 0, activeColumns().length - 1);
+        state.step = "Switched to next column";
+        render();
+      }, 260);
+      window.setTimeout(() => {
+        const nextColumn = focusedColumn();
+        if (!nextColumn || nextColumn === originColumn) return;
+        const nextStack = getOrCreateStack(nextColumn);
+        if (!nextStack) return;
+        const nextPrompt = document.createElement("div");
+        nextPrompt.className = "workspace-skeleton workspace-skeleton--prompt";
+        nextPrompt.innerHTML = skeletonMarkup;
+        nextStack.appendChild(nextPrompt);
+        const nextKey = columnKey();
+        state.scrollByColumn.set(nextKey, 0);
+        state.step = "Second droid request sent";
+        render();
+        window.setTimeout(() => appendLoaderCard(nextStack, nextKey, () => {
+          appendGeneratedDiffCard(nextStack);
+          state.step = "Parallel droids completed";
+          render();
+        }), 280);
+      }, 520);
+      render();
+      return;
+    }
+    if (state.workspaceIndex === 1) {
+      state.step = "Patch generation started";
+      window.setTimeout(() => appendLoaderCard(result.stack, columnKey(), () => {
+        appendGeneratedDiffCard(result.stack);
+        state.step = "Patch generated";
+      }), 980);
       return;
     }
     state.step = "Image generation started";
-    window.setTimeout(() => appendLoaderCard(result.stack, columnKey()), 980);
+    window.setTimeout(() => appendLoaderCard(result.stack, columnKey(), () => {
+      const image = generatedImageForWorkspace(state.workspaceIndex);
+      appendGeneratedImageCard(result.stack, state.workspaceIndex);
+      triggerWebviewReload(image);
+    }), 980);
   };
 
   const pulseKey = (keyName) => {
@@ -198,11 +278,11 @@ function setupWorkspaceControlDemo(section) {
     state.key = key;
     if (key === "a") {
       state.columnIndex = clamp(state.columnIndex - 1, 0, activeColumns().length - 1);
-      state.step = "Column focus moved left";
+      state.step = "Column moved left";
     }
     if (key === "d") {
       state.columnIndex = clamp(state.columnIndex + 1, 0, activeColumns().length - 1);
-      state.step = "Column focus moved right";
+      state.step = "Column moved right";
     }
     if (key === "w") {
       state.workspaceIndex = clamp(state.workspaceIndex - 1, 0, slides.length - 1);
@@ -216,13 +296,23 @@ function setupWorkspaceControlDemo(section) {
     }
     if (key === "r") {
       state.voiceActive = !state.voiceActive;
-      state.step = state.voiceActive ? "Voice activated" : "Voice stopped, prompt card inserted";
+      if (state.voiceActive) {
+        state.step =
+          state.workspaceIndex === 0 ? "Design image prompt recorded" :
+          state.workspaceIndex === 1 ? "Patch request recorded" :
+          "Creative note recorded";
+      } else {
+        state.step =
+          state.workspaceIndex === 0 ? "Design prompt submitted" :
+          state.workspaceIndex === 1 ? "Patch prompt submitted" :
+          "Creative note submitted";
+      }
       if (!state.voiceActive) handleVoiceNoteSent(addConversationCard());
     }
     if (key === "q" || key === "e") {
       const column = focusedColumn();
       if (!canScrollColumn(column)) {
-        state.step = "Focused surface has no chat scroll";
+        state.step = "No scrollable history";
         render();
         pulseKey(key);
         return;
@@ -231,7 +321,12 @@ function setupWorkspaceControlDemo(section) {
       const maxScroll = viewport ? Math.max(0, viewport.scrollHeight - viewport.clientHeight) : maxScrollPx;
       const nextScroll = clamp((state.scrollByColumn.get(columnKey()) || 0) + (key === "q" ? scrollStepPx : -scrollStepPx), 0, Math.min(maxScrollPx, maxScroll));
       state.scrollByColumn.set(columnKey(), nextScroll);
-      state.step = key === "q" ? "Focused chat scrolled up" : "Focused chat scrolled down";
+      state.step =
+        state.workspaceIndex === 0
+          ? (key === "q" ? "Design chat scrolled up" : "Design chat scrolled down")
+          : state.workspaceIndex === 1
+            ? (key === "q" ? "Patch history scrolled up" : "Patch history scrolled down")
+            : (key === "q" ? "Creative queue scrolled up" : "Creative queue scrolled down");
     }
     render();
     pulseKey(key);
@@ -240,8 +335,8 @@ function setupWorkspaceControlDemo(section) {
   const play = () => {
     const sequence = [
       "q", "q", "q", "q",
-      "d", "r", "r",
-      "s", "r", "r",
+      "r", "r",
+      "s", "q", "r", "r",
       "s", "r", "r",
       "w", "w",
     ];
@@ -259,7 +354,7 @@ function setupWorkspaceControlDemo(section) {
       }
       const key = sequence[index];
       const nextKey = sequence[(index + 1) % sequence.length];
-      if (key === "w" && index === sequence.length - 1) {
+      if (index === sequence.length - 1 && key === "w") {
         resetState();
         state.workspaceIndex = 1;
         seedColumnSkeletons();
@@ -267,9 +362,10 @@ function setupWorkspaceControlDemo(section) {
         loopResetPrepared = true;
       }
       applyKey(key);
-      const blueImagePause = key === "r" && state.workspaceIndex === 1 && state.voiceActive === false;
+      const greenImagePause = key === "r" && state.workspaceIndex === 0 && state.voiceActive === false;
+      const bluePatchPause = key === "r" && state.workspaceIndex === 1 && state.voiceActive === false;
       index = (index + 1) % sequence.length;
-      const delay = blueImagePause ? 3130 : key === "r" && nextKey === "r" ? 1800 : key === "r" ? 2300 : key === "q" && nextKey === "q" ? 230 : index === 0 ? 1300 : 620;
+      const delay = greenImagePause ? 4180 : bluePatchPause ? 3130 : key === "r" && nextKey === "r" ? 1800 : key === "r" ? 2300 : key === "q" && nextKey === "q" ? 230 : index === 0 ? 1300 : 620;
       window.setTimeout(advance, delay);
     };
     window.setTimeout(advance, 500);

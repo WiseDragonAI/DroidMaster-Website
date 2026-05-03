@@ -11,6 +11,7 @@ This repository owns the public DroidMaster commercial website. Keep the canonic
 3. **Unified surface demo**: the workspace mock shows keyboard navigation, voice prompting, generated cards, browser updates, and image generation as one synchronized product surface.
 4. **Debug controls**: title, punchline, and palette controls exist only for tuning and must stay gated behind `?debug=1`.
 5. **Palette invariant**: the animated hue range is primary `204deg` to `222deg` and secondary `30deg` to `40deg`.
+6. **Version 04**: `versions/design-system/index.html` is the Business OS design-system adaptation and is driven by local token controls in `versions/design-system/system-config.js`.
 
 ## Development Rules
 

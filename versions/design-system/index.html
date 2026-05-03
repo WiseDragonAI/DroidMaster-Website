@@ -1,0 +1,333 @@
+<!doctype html>
+<!--
+  WHY: Version 04 must preserve Version 03 content while proving the Business OS design-system skin.
+  WHAT: Reconstructs the Version 03 OSS page section by section with square tokenized Business OS surfaces.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0f14" />
+    <title>DroidMaster | Business OS Styled OSS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Aldrich&family=Audiowide&family=Barlow+Condensed:wght@500;700&family=Chakra+Petch:wght@500;700&family=Electrolize&family=Encode+Sans+Semi+Condensed:wght@500;700&family=Exo+2:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Jura:wght@500;700&family=Kanit:wght@500;700&family=Michroma&family=Orbitron:wght@500;700&family=Oxanium:wght@500;700&family=Quantico:wght@400;700&family=Rajdhani:wght@500;700&family=Saira:wght@500;700;800&family=Saira+Semi+Condensed:wght@500;700&family=Share+Tech+Mono&family=Space+Grotesk:wght@500;700&family=Syncopate:wght@700&family=Tektur:wght@500;700&family=Titillium+Web:wght@500;700&family=Tomorrow:wght@500;700&family=Ubuntu:wght@400;500;700&family=Zen+Dots&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./page.js"></script>
+    <script type="module" src="./parallax.js"></script>
+  </head>
+  <body>
+    <nav class="version-switcher" aria-label="Website version switcher">
+      <div>
+        <strong>Website</strong>
+        <a href="/versions/initial-flashy/">01</a>
+        <a href="/versions/prod/">02</a>
+        <a href="/versions/local-latest/">03</a>
+        <a href="/versions/design-system/" aria-current="page">04</a>
+        <a href="/">05</a>
+      </div>
+    </nav>
+
+    <div class="droid-engraving-field" aria-hidden="true">
+      <i class="droid-engraving droid-engraving-r2" style="--droid-mask: url('/assets/droids/droid_r2d2.png')"></i>
+      <i class="droid-engraving droid-engraving-hk" style="--droid-mask: url('/assets/droids/droid_hk47.png')"></i>
+      <i class="droid-engraving droid-engraving-ig" style="--droid-mask: url('/assets/droids/droid_ig88.png')"></i>
+      <i class="droid-engraving droid-engraving-bb" style="--droid-mask: url('/assets/droids/droid_bb8.png')"></i>
+    </div>
+
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="DroidMaster home">
+          <img src="/assets/droids/droid_r2d2.png" alt="" />
+          <span>DroidMaster</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="#deck">Command Deck</a>
+          <a href="#problems">Problems</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#install">Install</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="oss-hero system-card system-card-wide" aria-labelledby="hero-title">
+          <div class="section-copy">
+            <p class="eyebrow">Open source command deck for AI builders</p>
+            <h1 id="hero-title">Stop losing context while agents change your app.</h1>
+            <p class="hero-lede">
+              DroidMaster keeps your coding agents, browser preview, files, terminal output, tool calls, and voice prompts in one command deck.
+              See the work, steer the next action, and verify the result without rebuilding context in every window.
+            </p>
+            <div class="hero-actions" aria-label="Primary actions">
+              <button class="terminal-button terminal-button-primary" type="button">Start the local command deck</button>
+              <a class="terminal-button" href="https://github.com/WiseDragonAI/DroidMaster" target="_blank" rel="noopener noreferrer">View the source</a>
+              <a class="terminal-button" href="https://discord.gg/QzGH2XwySv" target="_blank" rel="noopener noreferrer">Join Discord</a>
+            </div>
+          </div>
+          <dl class="hero-facts" aria-label="Product facts">
+            <div><dt>Agents</dt><dd>multi-pane worker state</dd></div>
+            <div><dt>Browser</dt><dd>preview beside the worker</dd></div>
+            <div><dt>Local / VPS</dt><dd>runtime under your control</dd></div>
+          </dl>
+          <div class="droid-roster" aria-label="DroidMaster droid roster">
+            <img src="/assets/droids/droid_r2d2.png" alt="DroidMaster astromech unit" />
+            <img src="/assets/droids/droid_bb8.png" alt="DroidMaster scout unit" />
+            <img src="/assets/droids/droid_hk47.png" alt="DroidMaster protocol unit" />
+            <img src="/assets/droids/droid_ig88.png" alt="DroidMaster sentinel unit" />
+            <img src="/assets/droids/droid_b1.png" alt="DroidMaster worker unit" />
+            <span>Droid groups for parallel work</span>
+          </div>
+        </section>
+
+        <section class="content-section system-card system-card-wide" id="install" aria-labelledby="install-title">
+          <div class="section-copy split-copy">
+            <div>
+              <p class="eyebrow">Install</p>
+              <h2 id="install-title">Start locally. Keep control of the runtime.</h2>
+              <p>Launch the web command deck from your terminal, then connect it to the model tools and workspaces you already use.</p>
+            </div>
+            <div class="install-command">
+              <code>npx droidmaster web</code>
+              <button class="terminal-button terminal-button-primary" type="button">Copy install command</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section system-card system-card-wide" id="deck" aria-labelledby="product-shot-title">
+          <div class="section-copy">
+            <p class="eyebrow">Real command deck shape</p>
+            <h2 id="product-shot-title">A high-density workspace only works when the browser, agent, and next prompt stay visible.</h2>
+          </div>
+          <aside class="deck-preview" aria-label="DroidMaster command deck preview">
+            <div class="deck-dock" aria-hidden="true">
+              <span><img src="/assets/droids/droid_r2d2.png" alt="" /></span>
+              <span><img src="/assets/droids/droid_bb8.png" alt="" /></span>
+              <span><img src="/assets/droids/droid_hk47.png" alt="" /></span>
+              <span><img src="/assets/droids/droid_ig88.png" alt="" /></span>
+              <span><img src="/assets/droids/droid_c3po.png" alt="" /></span>
+            </div>
+            <article class="agent-pane agent-pane-active">
+              <header class="agent-head">
+                <div>
+                  <strong>SES</strong>
+                  <span>MOH · gpt-5.4 / high</span>
+                </div>
+                <em>37%</em>
+              </header>
+              <div class="message-stack">
+                <p>Worktree rebase verified. Local edits preserved.</p>
+                <p class="mono-line">pipeline/trustly-sdk-android-implementation</p>
+                <div class="tool-chip">Tool Calls <strong>3 completed</strong></div>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+            <article class="agent-pane">
+              <header class="agent-head">
+                <div>
+                  <strong>IMAGES</strong>
+                  <span>image-gateway-s3 · medium</span>
+                </div>
+                <em>80%</em>
+              </header>
+              <div class="message-stack">
+                <p>Continuing toward 100% coverage with targeted failure-path injection.</p>
+                <div class="voice-note">0:02</div>
+                <div class="tool-chip">Tool Calls <strong>19 completed</strong></div>
+                <pre>go test ./cmd/mops -coverprofile=/tmp/mops.cover.out</pre>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+            <article class="agent-pane">
+              <header class="agent-head">
+                <div>
+                  <strong>CLI</strong>
+                  <span>gpt-5.3-codex / medium</span>
+                </div>
+                <em>61%</em>
+              </header>
+              <div class="message-stack">
+                <p>Host-only availability note corrected. Container route remains separate.</p>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+            <article class="agent-pane">
+              <header class="agent-head">
+                <div>
+                  <strong>DEV WEB</strong>
+                  <span>gpt-5.3-codex / medium</span>
+                </div>
+                <em>87%</em>
+              </header>
+              <div class="message-stack terminal-stream">
+                <p>[supervisor] worktree cwd missing; switched to repo root cwd</p>
+                <p>/host-home/dev/MOH/.worktrees/web-mvp-readonly-orders</p>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+          </aside>
+        </section>
+
+        <section class="content-section system-card system-card-wide" aria-labelledby="explain-title">
+          <div class="section-copy">
+            <p class="eyebrow">The core problem</p>
+            <h2 id="explain-title">AI work breaks when the instruction, execution, and result live in different places.</h2>
+          </div>
+          <div class="feature-grid three-up">
+            <article><span>01</span><h3>You lose worker state</h3><p>Agents run, wait, fail, or ask for input while their status is buried in separate terminals or chat histories.</p></article>
+            <article><span>02</span><h3>You inspect results out of context</h3><p>The browser shows what changed, but the prompt, tool output, and next instruction are somewhere else.</p></article>
+            <article><span>03</span><h3>You become the router</h3><p>You copy logs, screenshots, paths, and next instructions between tools instead of directing the work.</p></article>
+          </div>
+        </section>
+
+        <section class="content-section system-card system-card-wide" id="problems" aria-labelledby="problem-sections-title">
+          <div class="section-copy">
+            <p class="eyebrow">Features by problem solved</p>
+            <h2 id="problem-sections-title">Every feature exists to solve one context problem.</h2>
+          </div>
+          <div class="problem-list">
+            <article class="problem-feature">
+              <div class="problem-copy">
+                <p class="problem-label">Problem 01</p>
+                <h3>The agent is changing the app, but the app is in another window.</h3>
+                <p>You ask for a UI change, switch to the browser, notice the wrong state, switch back to the agent, paste context, then repeat. DroidMaster keeps the worker and browser preview in the same workspace so the next instruction can reference what you are already seeing.</p>
+                <p class="outcome-line">Outcome: inspect the result while the agent still has task context.</p>
+              </div>
+              <div class="problem-visual browser-agent-visual" aria-hidden="true">
+                <div class="mini-agent">
+                  <strong>DEV WEB</strong>
+                  <span>Update the pricing section and verify layout.</span>
+                  <em>Tool Calls · 5 completed</em>
+                </div>
+                <div class="mini-browser">
+                  <div class="mini-browser-bar"><span></span><span></span><span></span><strong>localhost:5173</strong></div>
+                  <div class="mini-page">
+                    <b>Pricing</b>
+                    <i></i><i></i><i></i>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="problem-feature">
+              <div class="problem-copy">
+                <p class="problem-label">Problem 02</p>
+                <h3>Multiple agents become invisible background processes.</h3>
+                <p>Running more than one agent should not mean losing track of who is doing what. DroidMaster gives each worker a pane with status, context, tool calls, and its own prompt row.</p>
+                <p class="outcome-line">Outcome: compare progress without reopening terminals or scrolling through one giant transcript.</p>
+              </div>
+              <div class="problem-visual multi-agent-visual" aria-hidden="true">
+                <span>SES <b>37%</b></span>
+                <span>IMAGES <b>80%</b></span>
+                <span>CLI <b>61%</b></span>
+                <span>DEV WEB <b>87%</b></span>
+              </div>
+            </article>
+
+            <article class="problem-feature">
+              <div class="problem-copy">
+                <p class="problem-label">Problem 03</p>
+                <h3>Dense AI work is too slow when every action needs the mouse.</h3>
+                <p>When the deck has agents, files, browser, and tool output, tiny controls become friction. QWER and ASD make the workspace feel physical: move focus, switch surfaces, scroll history, and trigger voice input from the keyboard.</p>
+                <p class="outcome-line">Outcome: navigate parallel work without breaking flow.</p>
+              </div>
+              <div class="problem-visual control-visual" aria-hidden="true">
+                <div class="mouse-friction">
+                  <span></span><span></span><span></span><span></span>
+                  <b>Mouse hunt</b>
+                </div>
+                <div class="control-arrow">→</div>
+                <div class="keyboard-control">
+                  <span>Q</span><span>W</span><span>E</span><span class="voice-key">R</span>
+                  <span>A</span><span>S</span><span>D</span>
+                  <b>Focus keys</b>
+                </div>
+              </div>
+            </article>
+
+            <article class="problem-feature">
+              <div class="problem-copy">
+                <p class="problem-label">Problem 04</p>
+                <h3>Long prompts interrupt the thing you are trying to inspect.</h3>
+                <p>Typing a detailed instruction while reading UI state or reviewing output is slow. Voice notes let you explain the next change while staying in the active workspace, then insert that instruction as a visible prompt card.</p>
+                <p class="outcome-line">Outcome: capture intent without leaving the context that created it.</p>
+              </div>
+              <div class="problem-visual voice-problem-visual" aria-hidden="true">
+                <div class="voice-bars"><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="prompt-card">
+                  <strong>Voice prompt</strong>
+                  <p>Make the browser panel prove the copy, then verify spacing.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="problem-feature">
+              <div class="problem-copy">
+                <p class="problem-label">Problem 05</p>
+                <h3>Agent tools try to pull you into one provider workflow.</h3>
+                <p>You may already use Codex, Claude Code, or both. DroidMaster wraps the tools you trust instead of turning the operating surface into another model subscription.</p>
+                <p class="outcome-line">Outcome: keep your model workflow and upgrade the surface around it.</p>
+              </div>
+              <div class="problem-visual provider-visual" aria-hidden="true">
+                <span><b>◎</b> Codex</span>
+                <i></i>
+                <span><b>◇</b> Claude Code</span>
+              </div>
+            </article>
+
+            <article class="problem-feature">
+              <div class="problem-copy">
+                <p class="problem-label">Problem 06</p>
+                <h3>Cloud convenience can make local trust unclear.</h3>
+                <p>AI agents need access to real files, credentials, and runtime state. DroidMaster can run locally or on your own VPS, so you choose what workspaces and secrets the runtime can touch.</p>
+                <p class="outcome-line">Outcome: use a powerful command deck without giving up runtime control.</p>
+              </div>
+              <div class="problem-visual runtime-visual" aria-hidden="true">
+                <span>Local deck</span>
+                <i></i>
+                <span>Chosen workspaces</span>
+                <i></i>
+                <span>Own VPS</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section system-card system-card-wide" id="workflow" aria-labelledby="workflow-title">
+          <div class="section-copy">
+            <p class="eyebrow">The workflow loop</p>
+            <h2 id="workflow-title">One loop: focus the worker, speak the intent, verify the change.</h2>
+            <p>The animation is not a product tour. It teaches the control model behind the real deck: move between surfaces, issue the instruction, watch the tool calls, and inspect the result in place.</p>
+          </div>
+          <div class="workflow-grid">
+            <article><span>QWER / ASD</span><h3>Focus the worker</h3><p>Move through agents, files, browser state, and generated output without breaking flow.</p></article>
+            <article><span>Voice note</span><h3>Speak the intent</h3><p>Explain the next change while staying in the active workspace.</p></article>
+            <article><span>Visible result</span><h3>Verify the change</h3><p>Inspect the result where the instruction, tool calls, and browser state remain visible.</p></article>
+          </div>
+        </section>
+
+        <section class="content-section system-card system-card-wide faq-list" id="faq" aria-labelledby="faq-title">
+          <div class="section-copy">
+            <p class="eyebrow">FAQ</p>
+            <h2 id="faq-title">Frequently asked questions</h2>
+          </div>
+          <details open><summary>Why is the interface dense?</summary><p>Because parallel AI work has real state. DroidMaster makes that state visible and keyboard-navigable instead of hiding it in separate tools.</p></details>
+          <details><summary>Do I need a new AI subscription?</summary><p>No. DroidMaster is the command deck around the model tools you already use, not a replacement subscription.</p></details>
+          <details><summary>Can I keep work local?</summary><p>Yes. Run locally or on your own VPS and decide which folders, credentials, and workspaces are exposed.</p></details>
+          <details><summary>Why not use a normal chat UI?</summary><p>A normal chat UI hides browser state, tool calls, worker state, and file context. DroidMaster is for work where those things need to stay visible together.</p></details>
+        </section>
+      </main>
+      <footer class="site-footer">
+        <a class="brand" href="/" aria-label="DroidMaster home">
+          <img src="/assets/droids/droid_r5d4.png" alt="" />
+          <span>DroidMaster</span>
+        </a>
+        <div class="footer-links" aria-label="Footer links">
+          <a href="https://github.com/WiseDragonAI/DroidMaster" target="_blank" rel="noopener noreferrer">Source</a>
+          <a href="https://discord.gg/QzGH2XwySv" target="_blank" rel="noopener noreferrer">Discord</a>
+          <a href="mailto:contact@wisedragon.ai">Contact</a>
+          <span>Privacy and legal pages pending for launch readiness.</span>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

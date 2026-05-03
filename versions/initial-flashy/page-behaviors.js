@@ -12,241 +12,114 @@
         document.body.dataset.debug = debugControlsEnabled ? 'true' : 'false';
       };
 
-      // WHAT: Renders the voice-note mock as one smooth accumulated envelope fed by mock voice data.
+      // WHY: Section titles and subtitles should share one canonical per-letter reveal system across the page.
+      // WHAT: Prepares typed-title nodes once and lets reveal controllers toggle them without bespoke per-section markup logic.
+      const prepareTypedRevealCharacters = (element, {
+        characterClass = 'page-flow-typed-char',
+        wordClass = 'page-flow-typed-word',
+        characterIntervalMs = 4,
+        fadeDurationMs = 72,
+      } = {}) => {
+        if (!(element instanceof HTMLElement) || element.dataset.typePrepared === 'true') return 0;
+
+        let characterCount = 0;
+        const buildWordFragment = (text) => {
+          const fragment = document.createDocumentFragment();
+          const segments = text.match(/\S+|\s+/g) ?? [];
+
+          segments.forEach((segment) => {
+            if (/^\s+$/.test(segment)) {
+              fragment.appendChild(document.createTextNode(segment));
+              characterCount += segment.length;
+              return;
+            }
+
+            const word = document.createElement('span');
+            word.className = wordClass;
+
+            for (const character of segment) {
+              const span = document.createElement('span');
+              span.className = characterClass;
+              span.textContent = character;
+              span.style.animationDelay = `${characterCount * characterIntervalMs}ms`;
+              characterCount += 1;
+              word.appendChild(span);
+            }
+
+            fragment.appendChild(word);
+          });
+
+          return fragment;
+        };
+
+        const buildNode = (node) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            return buildWordFragment(node.textContent ?? '');
+          }
+
+          if (!(node instanceof HTMLElement)) return document.createDocumentFragment();
+
+          const clone = document.createElement(node.tagName.toLowerCase());
+          clone.className = node.className;
+          Array.from(node.childNodes).forEach((child) => {
+            clone.appendChild(buildNode(child));
+          });
+          return clone;
+        };
+
+        const fragment = document.createDocumentFragment();
+        Array.from(element.childNodes).forEach((child) => {
+          fragment.appendChild(buildNode(child));
+        });
+        element.textContent = '';
+        element.appendChild(fragment);
+        element.dataset.typePrepared = 'true';
+        element.dataset.typeDurationMs = String((characterCount * characterIntervalMs) + fadeDurationMs);
+        return characterCount;
+      };
+
+      const collectTypedRevealTargets = (scope, { includeTypeLines = false } = {}) => {
+        if (!(scope instanceof HTMLElement)) return [];
+        const selector = includeTypeLines ? '[data-type-reveal], [data-type-line]' : '[data-type-reveal]';
+        const targets = [];
+        if (scope.matches(selector)) targets.push(scope);
+        targets.push(...Array.from(scope.querySelectorAll(selector)).filter((element) => element instanceof HTMLElement));
+        return [...new Set(targets)];
+      };
+
+      const resetTypedRevealTarget = (target) => {
+        if (!(target instanceof HTMLElement)) return;
+        target.classList.remove('is-visible');
+        target.querySelectorAll('.page-flow-typed-char, .one-super-typed-char').forEach((character) => {
+          if (!(character instanceof HTMLElement)) return;
+          character.style.animation = 'none';
+          character.style.opacity = '';
+          character.style.filter = '';
+          void character.offsetWidth;
+          character.style.animation = '';
+        });
+      };
+
+      const showTypedRevealTargets = (scope, options = {}) => {
+        collectTypedRevealTargets(scope, options).forEach((target) => {
+          target.classList.add('is-visible');
+        });
+      };
+
+      const hideTypedRevealTargets = (scope, options = {}) => {
+        collectTypedRevealTargets(scope, options).forEach((target) => {
+          resetTypedRevealTarget(target);
+        });
+      };
+
       (() => {
-        const setupVoiceSpectrumWidgets = () => {
-          const histories = Array.from(document.querySelectorAll('.voice-history'));
-          if (!histories.length) return;
-
-          histories.forEach((history, historyIndex) => {
-            if (!(history instanceof HTMLElement) || history.dataset.voiceSpectrumReady === 'true') return;
-            history.dataset.voiceSpectrumReady = 'true';
-
-            const canvas = document.createElement('canvas');
-            canvas.className = 'voice-spectrum-canvas';
-            canvas.setAttribute('aria-hidden', 'true');
-            history.appendChild(canvas);
-
-            const timer = document.createElement('span');
-            timer.className = 'voice-time-chip';
-            timer.dataset.wordGlowSkip = 'true';
-            timer.textContent = '00:00';
-            history.appendChild(timer);
-
-            const context = canvas.getContext('2d');
-            if (!context) return;
-
-            const shell = history.closest('.voice-shell');
-            const values = [];
-            const startedAt = performance.now() - historyIndex * 420;
-            let smoothed = 0.28;
-            let lastFrame = 0;
-
-            const isActive = () => {
-              const widget = history.closest('.workspace-voice-widget');
-              return !widget || widget.dataset.active === 'true';
-            };
-
-            const resize = () => {
-              const rect = history.getBoundingClientRect();
-              const width = Math.max(1, Math.round(rect.width * window.devicePixelRatio));
-              const height = Math.max(1, Math.round(rect.height * window.devicePixelRatio));
-              if (canvas.width === width && canvas.height === height) return;
-              canvas.width = width;
-              canvas.height = height;
-            };
-
-            const mockAmplitude = (elapsedSeconds) => {
-              const phrase = Math.sin(elapsedSeconds * 2.35 + historyIndex * 0.9) * 0.5 + 0.5;
-              const syllable = Math.sin(elapsedSeconds * 9.6 + historyIndex * 1.7) * 0.5 + 0.5;
-              const consonant = Math.sin(elapsedSeconds * 21.2 + historyIndex * 2.4) * 0.5 + 0.5;
-              return Math.min(1, 0.16 + phrase * 0.46 + syllable * 0.26 + consonant * 0.12);
-            };
-
-            const drawEmpty = () => {
-              context.clearRect(0, 0, canvas.width, canvas.height);
-              timer.textContent = '00:00';
-              if (shell instanceof HTMLElement) shell.style.setProperty('--voice-level', '0%');
-            };
-
-            const draw = (elapsedSeconds) => {
-              const width = canvas.width;
-              const height = canvas.height;
-              const ratio = window.devicePixelRatio || 1;
-              const maxPoints = Math.max(32, Math.floor(width / (3.2 * ratio)));
-              const sample = mockAmplitude(elapsedSeconds);
-              smoothed += (sample - smoothed) * 0.18;
-              values.push(smoothed);
-              while (values.length > maxPoints) values.shift();
-
-              context.clearRect(0, 0, width, height);
-              const topPadding = 10 * ratio;
-              const bottomPadding = 10 * ratio;
-              const baseline = height - bottomPadding;
-              const maxWaveHeight = Math.max(1, height - topPadding - bottomPadding);
-              const step = values.length > 1 ? width / (values.length - 1) : width;
-              const readRgbTriplet = (variableName, fallback) => {
-                const rawValue = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-                const channels = rawValue.split(/\s+/).map((channel) => Number(channel));
-                if (channels.length !== 3 || channels.some((channel) => !Number.isFinite(channel))) {
-                  return fallback;
-                }
-                return channels;
-              };
-              const rgba = (channels, alpha) => `rgba(${channels.join(', ')}, ${alpha})`;
-              const accentRgb = readRgbTriplet('--accent-rgb', [107, 63, 158]);
-              const accentSoftRgb = readRgbTriplet('--accent-soft-rgb', [99, 58, 145]);
-              const accentMutedRgb = readRgbTriplet('--accent-muted-rgb', [70, 41, 103]);
-              const fill = context.createLinearGradient(0, topPadding, 0, baseline);
-              fill.addColorStop(0, rgba(accentRgb, 0.92));
-              fill.addColorStop(0.62, rgba(accentSoftRgb, 0.74));
-              fill.addColorStop(1, rgba(accentMutedRgb, 0.94));
-
-              context.save();
-              context.shadowColor = rgba(accentRgb, 0.24);
-              context.shadowBlur = 14 * ratio;
-              context.beginPath();
-              context.moveTo(0, baseline);
-              values.forEach((value, index) => {
-                const x = index * step;
-                const y = baseline - Math.pow(value, 0.78) * maxWaveHeight;
-                if (index === 0) {
-                  context.lineTo(x, y);
-                  return;
-                }
-                const previousValue = values[index - 1];
-                const previousX = (index - 1) * step;
-                const previousY = baseline - Math.pow(previousValue, 0.78) * maxWaveHeight;
-                context.quadraticCurveTo(previousX, previousY, (previousX + x) / 2, (previousY + y) / 2);
-              });
-              if (values.length) {
-                const lastValue = values[values.length - 1];
-                context.lineTo(width, baseline - Math.pow(lastValue, 0.78) * maxWaveHeight);
-              }
-              context.lineTo(width, baseline);
-              context.closePath();
-              context.fillStyle = fill;
-              context.fill();
-              context.restore();
-
-              context.strokeStyle = rgba(accentRgb, 0.28);
-              context.lineWidth = 1 * ratio;
-              context.beginPath();
-              values.forEach((value, index) => {
-                const x = index * step;
-                const y = baseline - Math.pow(value, 0.78) * maxWaveHeight;
-                if (index === 0) context.moveTo(x, y);
-                else context.lineTo(x, y);
-              });
-              context.stroke();
-
-              const seconds = Math.floor(elapsedSeconds);
-              timer.textContent = `00:${String(seconds % 60).padStart(2, '0')}`;
-              if (shell instanceof HTMLElement) shell.style.setProperty('--voice-level', `${Math.round(smoothed * 92)}%`);
-            };
-
-            const tick = (now) => {
-              resize();
-              if (!isActive()) {
-                values.length = 0;
-                smoothed = 0.18;
-                drawEmpty();
-                window.requestAnimationFrame(tick);
-                return;
-              }
-              if (now - lastFrame >= 1000 / 60) {
-                lastFrame = now;
-                draw((now - startedAt) / 1000);
-              }
-              window.requestAnimationFrame(tick);
-            };
-
-            window.requestAnimationFrame(tick);
+        const setupTypedRevealNodes = () => {
+          document.querySelectorAll('[data-type-reveal]').forEach((element) => {
+            prepareTypedRevealCharacters(element);
           });
         };
 
-        window.addEventListener('load', setupVoiceSpectrumWidgets);
-      })();
-
-      // WHAT: Drive the canonical voice graph and voicometer used by the workspace mockup.
-      (() => {
-        const setupCanonicalVoiceDock = () => {
-          document.querySelectorAll('[data-v1-wave-panel]').forEach((panel, panelIndex) => {
-            if (!(panel instanceof HTMLElement) || panel.dataset.v1WaveReady === 'true') return;
-            panel.dataset.v1WaveReady = 'true';
-            const areaPath = panel.querySelector('.v1-wave-area-path');
-            const corePath = panel.querySelector('.v1-wave-core-path');
-            const meterFill = panel.parentElement?.querySelector('.v1-meter-fill');
-            if (!areaPath || !corePath || !(meterFill instanceof HTMLElement)) return;
-
-            const sampleCount = 36;
-            const samples = Array.from({ length: sampleCount }, () => 0.12);
-            const baseline = 100;
-            let smoothed = 0.24;
-            let lastFrame = 0;
-
-            const isActive = () => {
-              const widget = panel.closest('.workspace-voice-widget');
-              return !widget || widget.dataset.active === 'true';
-            };
-
-            const amplitude = (elapsedSeconds) => {
-              const phrase = Math.sin(elapsedSeconds * 2.2 + panelIndex * 0.7) * 0.5 + 0.5;
-              const syllable = Math.sin(elapsedSeconds * 8.9 + panelIndex * 1.3) * 0.5 + 0.5;
-              const consonant = Math.sin(elapsedSeconds * 19.1 + panelIndex * 2.1) * 0.5 + 0.5;
-              return Math.min(1, 0.12 + phrase * 0.46 + syllable * 0.28 + consonant * 0.14);
-            };
-
-            const buildPath = (values, scale) => {
-              const step = 1000 / (values.length - 1);
-              const points = values.map((value, index) => {
-                const x = index * step;
-                const y = baseline - Math.pow(value, 0.78) * 92 * scale;
-                return [x, y];
-              });
-              const line = points.reduce((path, point, index) => {
-                if (index === 0) return `M${point[0].toFixed(1)} ${baseline}`;
-                const previous = points[index - 1];
-                const cx = ((previous[0] + point[0]) / 2).toFixed(1);
-                const cy = ((previous[1] + point[1]) / 2).toFixed(1);
-                return `${path} Q${previous[0].toFixed(1)} ${previous[1].toFixed(1)} ${cx} ${cy}`;
-              }, '');
-              return `${line} T1000 ${points[points.length - 1][1].toFixed(1)} L1000 ${baseline} H0 Z`;
-            };
-
-            const drawEmpty = () => {
-              areaPath.setAttribute('d', 'M0 100H1000V100H0z');
-              corePath.setAttribute('d', 'M0 100H1000V100H0z');
-              meterFill.style.height = '0%';
-            };
-
-            const tick = (now) => {
-              if (!isActive()) {
-                samples.fill(0.1);
-                smoothed = 0.12;
-                drawEmpty();
-                window.requestAnimationFrame(tick);
-                return;
-              }
-              if (now - lastFrame >= 1000 / 30) {
-                lastFrame = now;
-                const elapsedSeconds = now / 1000;
-                const next = amplitude(elapsedSeconds);
-                smoothed += (next - smoothed) * 0.22;
-                samples.push(smoothed);
-                while (samples.length > sampleCount) samples.shift();
-                areaPath.setAttribute('d', buildPath(samples, 1));
-                corePath.setAttribute('d', buildPath(samples, .38));
-                meterFill.style.height = `${Math.round(18 + smoothed * 76)}%`;
-              }
-              window.requestAnimationFrame(tick);
-            };
-
-            window.requestAnimationFrame(tick);
-          });
-        };
-
-        window.addEventListener('load', setupCanonicalVoiceDock);
+        window.addEventListener('load', setupTypedRevealNodes);
       })();
 
       // WHAT: Let the operator cycle through robotic Google Fonts for the masthead.
@@ -298,13 +171,14 @@
           const opacityButton = document.querySelector('[data-brand-opacity-cycle]');
           const orbGlowButton = document.querySelector('[data-brand-orb-glow-cycle]');
           if (!titleNodes.length || !button || !brandCap) return;
-          let activeIndex = 9;
+          const randomBrandStartIndices = [0, 2, 3, 9];
+          let activeIndex = randomBrandStartIndices[Math.floor(Math.random() * randomBrandStartIndices.length)];
           let animationEnabled = true;
-          let glowLevel = 0.4;
+          let glowLevel = 0.65;
           let opacityLevel = 1;
           let orbGlowLevel = 1;
           let pulseFrame = null;
-          const pulseMs = 4800;
+          const pulseMs = 18000;
 
           const render = () => {
             const font = brandFonts[activeIndex];
@@ -323,25 +197,26 @@
           };
 
           const applyPulse = (pulse) => {
-            const rest = 0.02;
-            const falloff = 0.12;
             const shapedPulse = Math.max(0, Math.min(1, pulse));
-            const glowOpacity = opacityLevel * (rest + ((1 - rest) * shapedPulse));
-            const strokeOpacity = opacityLevel * (0.05 + (0.95 * shapedPulse));
-            const afterglow = Math.max(falloff, shapedPulse);
-            brandCap.style.setProperty('--brand-text-glow-opacity', glowOpacity.toFixed(3));
-            brandCap.style.setProperty('--brand-stroke-opacity', strokeOpacity.toFixed(3));
-            brandCap.style.setProperty('--brand-glow-blur', `${(1 + (7 * shapedPulse)) * glowLevel}px`);
-            brandCap.style.setProperty('--brand-glow-blue-shadow', `${(3 + (11 * shapedPulse)) * glowLevel}px`);
-            brandCap.style.setProperty('--brand-glow-purple-shadow', `${(6 + (24 * shapedPulse)) * glowLevel}px`);
-            brandCap.style.setProperty('--brand-stroke-blue-shadow', `${(1 + (3 * afterglow)) * glowLevel}px`);
-            brandCap.style.setProperty('--brand-stroke-purple-shadow', `${(2 + (8 * afterglow)) * glowLevel}px`);
+            const randomishGlow = 0.6 + (0.1 * shapedPulse);
+            brandCap.style.setProperty('--brand-font-glow-effect', randomishGlow.toFixed(3));
+            brandCap.style.setProperty('--brand-text-glow-opacity', opacityLevel.toFixed(3));
+            brandCap.style.setProperty('--brand-stroke-opacity', opacityLevel.toFixed(3));
+            brandCap.style.setProperty('--brand-glow-blur', `${(5.2 + (1.4 * shapedPulse)) * randomishGlow}px`);
+            brandCap.style.setProperty('--brand-glow-blue-shadow', `${(8.4 + (1.8 * shapedPulse)) * randomishGlow}px`);
+            brandCap.style.setProperty('--brand-glow-purple-shadow', `${(17 + (3.5 * shapedPulse)) * randomishGlow}px`);
+            brandCap.style.setProperty('--brand-stroke-blue-shadow', `${(2.2 + (0.7 * shapedPulse)) * randomishGlow}px`);
+            brandCap.style.setProperty('--brand-stroke-purple-shadow', `${(5.8 + (1.2 * shapedPulse)) * randomishGlow}px`);
           };
 
           const animatePulse = (now) => {
             if (!animationEnabled) return;
             const phase = (now % pulseMs) / pulseMs;
-            const pulse = Math.pow((Math.sin((phase * Math.PI * 2) - (Math.PI / 2)) + 1) / 2, 2.6);
+            const pulse = (
+              (Math.sin((phase * Math.PI * 2) - 0.7) + 1) * 0.42 +
+              (Math.sin((phase * Math.PI * 5.4) + 1.9) + 1) * 0.24 +
+              (Math.sin((phase * Math.PI * 8.6) - 2.4) + 1) * 0.16
+            ) / 1.64;
             applyPulse(pulse);
             pulseFrame = window.requestAnimationFrame(animatePulse);
           };
@@ -361,6 +236,12 @@
             restartPulse();
           };
 
+          // WHAT: Once the reveal wipe is complete, remove the mask so the title glow can overflow naturally.
+          brandCap.addEventListener('animationend', (event) => {
+            if (event.animationName !== 'brandTitleRevealMask') return;
+            brandCap.classList.add('brand-cap--revealed');
+          });
+
           button.addEventListener('click', () => {
             activeIndex = (activeIndex + 1) % brandFonts.length;
             render();
@@ -378,13 +259,13 @@
           }
           if (glowButton) {
             glowButton.addEventListener('click', () => {
-              glowLevel = Math.min(0.4, Number((glowLevel + 0.04).toFixed(2)));
+              glowLevel = Math.min(0.7, Number((glowLevel + 0.01).toFixed(2)));
               renderEffect();
               if (!animationEnabled) applyPulse(1);
             });
             glowButton.addEventListener('contextmenu', (event) => {
               event.preventDefault();
-              glowLevel = Math.max(0.04, Number((glowLevel - 0.04).toFixed(2)));
+              glowLevel = Math.max(0.6, Number((glowLevel - 0.01).toFixed(2)));
               renderEffect();
               if (!animationEnabled) applyPulse(1);
             });
@@ -520,6 +401,158 @@
 
         window.addEventListener('load', setupCommandCopy);
       })();
+      // WHY: The hero screenshot should feel like a physical interactive card instead of a static image.
+      // WHAT: Maps pointer position into local CSS variables that drive a simple tilt plus glare response.
+      (() => {
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+        const round = (value, precision = 3) => Number(value.toFixed(precision));
+        const restingState = {
+          pointerX: 24,
+          pointerY: 16,
+          fromLeft: 0.24,
+          fromTop: 0.16,
+          fromCenter: 0.52,
+          rotateX: -8,
+          rotateY: 4,
+          shiftX: -10,
+          shiftY: -4,
+          scale: 1,
+          glareOpacity: 0.34,
+          hoverShiftX: 0,
+          hoverShiftY: 0,
+          hoverScale: 1,
+          backdropOpacity: 0
+        };
+
+        const applyDeckState = (surface, state) => {
+          surface.style.setProperty('--deck-pointer-x', `${state.pointerX}%`);
+          surface.style.setProperty('--deck-pointer-y', `${state.pointerY}%`);
+          surface.style.setProperty('--deck-from-left', String(round(state.fromLeft)));
+          surface.style.setProperty('--deck-from-top', String(round(state.fromTop)));
+          surface.style.setProperty('--deck-from-center', String(round(state.fromCenter)));
+          surface.style.setProperty('--deck-rotate-x', `${round(state.rotateX, 2)}deg`);
+          surface.style.setProperty('--deck-rotate-y', `${round(state.rotateY, 2)}deg`);
+          surface.style.setProperty('--deck-shift-x', `${round(state.shiftX, 2)}px`);
+          surface.style.setProperty('--deck-shift-y', `${round(state.shiftY, 2)}px`);
+          surface.style.setProperty('--deck-scale', String(round(state.scale, 4)));
+          surface.style.setProperty('--deck-glare-opacity', String(round(state.glareOpacity)));
+          surface.style.setProperty('--deck-hover-shift-x', `${round(state.hoverShiftX ?? 0, 2)}px`);
+          surface.style.setProperty('--deck-hover-shift-y', `${round(state.hoverShiftY ?? 0, 2)}px`);
+          surface.style.setProperty('--deck-hover-scale', String(round(state.hoverScale ?? 1, 4)));
+          surface.style.setProperty('--deck-backdrop-opacity', String(round(state.backdropOpacity ?? 0)));
+        };
+
+        const buildHoverLift = (surface) => {
+          const rect = surface.getBoundingClientRect();
+          const viewportCenterX = window.innerWidth / 2;
+          const viewportCenterY = window.innerHeight / 2;
+          const cardCenterX = rect.left + (rect.width / 2);
+          const cardCenterY = rect.top + (rect.height / 2);
+
+          return {
+            hoverShiftX: viewportCenterX - cardCenterX,
+            hoverShiftY: viewportCenterY - cardCenterY,
+            hoverScale: 1.7,
+            backdropOpacity: 1
+          };
+        };
+
+        const buildInteractiveState = (rect, clientX, clientY, hoverLift) => {
+          const absoluteX = clamp(clientX - rect.left, 0, rect.width);
+          const absoluteY = clamp(clientY - rect.top, 0, rect.height);
+          const percentX = clamp((absoluteX / rect.width) * 100, 0, 100);
+          const percentY = clamp((absoluteY / rect.height) * 100, 0, 100);
+          const centerX = (percentX - 50) / 50;
+          const centerY = (percentY - 50) / 50;
+          const fromCenter = clamp(Math.hypot(centerX, centerY), 0, 1);
+
+          return {
+            pointerX: percentX,
+            pointerY: percentY,
+            fromLeft: percentX / 100,
+            fromTop: percentY / 100,
+            fromCenter,
+            rotateX: centerX * 8.5,
+            rotateY: -centerY * 7.25,
+            shiftX: centerX * 12,
+            shiftY: centerY * 9,
+            scale: 1.012 + (fromCenter * 0.015),
+            glareOpacity: 0.3 + (fromCenter * 0.5),
+            hoverShiftX: hoverLift.hoverShiftX,
+            hoverShiftY: hoverLift.hoverShiftY,
+            hoverScale: hoverLift.hoverScale,
+            backdropOpacity: hoverLift.backdropOpacity
+          };
+        };
+
+        const setupHeroDeckCard = () => {
+          const surfaces = Array.from(document.querySelectorAll('[data-hero-card]'));
+          if (!surfaces.length) return;
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          document.body.dataset.heroCardFocus = 'false';
+
+          surfaces.forEach((surface) => {
+            if (!(surface instanceof HTMLElement)) return;
+            surface.dataset.cardActive = 'false';
+            applyDeckState(surface, restingState);
+            if (reduceMotion) return;
+
+            let frameId = 0;
+            let pendingState = null;
+            let hoverLift = buildHoverLift(surface);
+
+            const flush = () => {
+              frameId = 0;
+              if (!pendingState) return;
+              applyDeckState(surface, pendingState);
+              pendingState = null;
+            };
+
+            const queueState = (state) => {
+              pendingState = state;
+              if (frameId) return;
+              frameId = window.requestAnimationFrame(flush);
+            };
+
+            surface.addEventListener('pointerenter', () => {
+              surface.dataset.cardActive = 'true';
+              document.body.dataset.heroCardFocus = 'true';
+              hoverLift = buildHoverLift(surface);
+              queueState({
+                ...restingState,
+                ...hoverLift
+              });
+            });
+
+            surface.addEventListener('pointermove', (event) => {
+              // WHY: The effect should be owned by the screenshot bounds, not a child overlay.
+              // WHAT: Normalize every pointer frame against the outer screenshot rect.
+              const rect = surface.getBoundingClientRect();
+              queueState(buildInteractiveState(rect, event.clientX, event.clientY, hoverLift));
+            });
+
+            const reset = () => {
+              surface.dataset.cardActive = 'false';
+              document.body.dataset.heroCardFocus = 'false';
+              queueState(restingState);
+            };
+
+            surface.addEventListener('pointerleave', reset);
+            surface.addEventListener('pointercancel', reset);
+            window.addEventListener('resize', () => {
+              hoverLift = buildHoverLift(surface);
+              if (surface.dataset.cardActive === 'true') {
+                queueState({
+                  ...restingState,
+                  ...hoverLift
+                });
+              }
+            });
+          });
+        };
+
+        window.addEventListener('load', setupHeroDeckCard);
+      })();
       // WHAT: Expose live primary and secondary color controls so the landing palette can be tuned in place.
       (() => {
         const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -597,20 +630,20 @@
                 ui: '--accent-ui-rgb',
               muted: '--accent-muted-rgb'
             },
-            defaults: { hue: 268, saturation: 60, luminosity: 62 },
+            defaults: { hue: 0, saturation: 100, luminosity: 89 },
             valueProfile: { rgb: 1, soft: .92, ui: .82, muted: .65 }
           }
         };
         const animatedHueRanges = {
           primary: { min: 204, max: 222, halfPeriodMs: 7000 },
-          secondary: { min: 264, max: 276, halfPeriodMs: 9000 }
+          secondary: { min: 0, max: 12, halfPeriodMs: 9000 }
         };
 
         const targetStorageKey = 'droidmaster-color-target';
         const animationStorageKey = 'droidmaster-animations-enabled';
         const tunerHiddenStorageKey = 'droidmaster-color-tuner-hidden';
         const paletteVersionKey = 'droidmaster-palette-version';
-        const paletteVersion = '2026-05-02-primary-204-222-secondary-purple-268-60-62';
+        const paletteVersion = '2026-05-03-primary-204-222-secondary-red-0-100-89';
         const offerGlowStorageKey = 'droidmaster-offer-glow-power';
         const triangleWave = (timestamp, halfPeriodMs) => {
           const fullPeriodMs = halfPeriodMs * 2;
@@ -718,7 +751,8 @@
           const hueLabel = document.querySelector('[data-color-hue-label]');
           const offerGlowSlider = document.querySelector('[data-offer-glow-slider]');
           const offerGlowValue = document.querySelector('[data-offer-glow-value]');
-          let animationsEnabled = window.localStorage.getItem(animationStorageKey) !== 'false';
+          let animationsEnabled = false;
+          window.localStorage.setItem(animationStorageKey, 'false');
 
           if (window.localStorage.getItem(paletteVersionKey) !== paletteVersion) {
             Object.values(colorTargets).forEach((target) => {
@@ -789,8 +823,8 @@
           }
           if (animationButton instanceof HTMLButtonElement) {
             animationButton.addEventListener('click', () => {
-              animationsEnabled = !animationsEnabled;
-              window.localStorage.setItem(animationStorageKey, animationsEnabled ? 'true' : 'false');
+              animationsEnabled = false;
+              window.localStorage.setItem(animationStorageKey, 'false');
               renderAnimationMode();
             });
           }
@@ -965,6 +999,7 @@
       (() => {
         const setupProblemAwareMotion = () => {
           const sessionStreams = Array.from(document.querySelectorAll('[data-problem-session-stream]'));
+          if (!sessionStreams.length) return;
 
           const appendTerminalLine = (stream) => {
             const line = document.createElement('div');
@@ -998,6 +1033,327 @@
         };
 
         window.addEventListener('load', setupProblemAwareMotion);
+      })();
+      // WHAT: Drive the canonical Business OS voice dock waveform inside the V1 problem card.
+      (() => {
+        const track = [
+          0.18, 0.24, 0.21, 0.34, 0.48, 0.43, 0.52, 0.31,
+          0.28, 0.39, 0.57, 0.69, 0.46, 0.35, 0.41, 0.29,
+          0.23, 0.32, 0.44, 0.61, 0.53, 0.37, 0.26, 0.21,
+          0.33, 0.49, 0.64, 0.58, 0.42, 0.36, 0.27, 0.22,
+        ];
+        const pointCount = 38;
+        const frameIntervalMs = 1000 / 30;
+        const viewBoxWidth = 1000;
+        const viewBoxHeight = 100;
+        const baseline = 100;
+        const maxAmplitude = 72;
+
+        const buildWavePath = (samples) => {
+          const values = samples.length ? samples : [0];
+          const step = values.length > 1 ? viewBoxWidth / (values.length - 1) : viewBoxWidth;
+          const coordinates = values.map((value, index) => ({
+            x: values.length === 1 ? viewBoxWidth : index * step,
+            y: baseline - Math.pow(value, 0.78) * maxAmplitude,
+          }));
+
+          let path = `M0 ${baseline}`;
+          if (coordinates.length === 1) {
+            const point = coordinates[0];
+            return `${path} L0 ${point.y.toFixed(1)} L${viewBoxWidth} ${point.y.toFixed(1)} L${viewBoxWidth} ${viewBoxHeight} L0 ${viewBoxHeight} Z`;
+          }
+
+          coordinates.forEach((point, index) => {
+            if (index === 0) {
+              path += ` L${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+              return;
+            }
+            const previous = coordinates[index - 1];
+            path += ` Q${previous.x.toFixed(1)} ${previous.y.toFixed(1)} ${((previous.x + point.x) / 2).toFixed(1)} ${((previous.y + point.y) / 2).toFixed(1)}`;
+          });
+          return `${path} L${viewBoxWidth} ${viewBoxHeight} L0 ${viewBoxHeight} Z`;
+        };
+
+        const setupCanonicalVoiceDock = () => {
+          document.querySelectorAll('[data-v1-wave-panel]').forEach((panel, panelIndex) => {
+            if (panel.dataset.voiceWaveReady === 'true') return;
+            const areaPath = panel.querySelector('.v1-wave-area-path');
+            const meterFill = panel.parentElement?.querySelector('.v1-meter-fill');
+            if (!areaPath) return;
+
+            panel.dataset.voiceWaveReady = 'true';
+            const samples = [];
+            let smoothed = 0.26;
+            let readIndex = panelIndex * 5;
+            let lastFrameAt = 0;
+
+            const tick = (now) => {
+              if (now - lastFrameAt >= frameIntervalMs) {
+                const next = track[readIndex % track.length] ?? 0.18;
+                smoothed += (next - smoothed) * 0.32;
+                let frameLevel = smoothed;
+                samples.push(frameLevel);
+                if (samples.length > pointCount) {
+                  samples.length = 0;
+                  smoothed = 0.24;
+                  frameLevel = smoothed;
+                  samples.push(frameLevel);
+                }
+                areaPath.setAttribute('d', buildWavePath(samples));
+                if (meterFill instanceof HTMLElement) {
+                  meterFill.style.height = `${Math.round(18 + frameLevel * 74)}%`;
+                }
+                readIndex += 1;
+                lastFrameAt = now;
+              }
+              window.requestAnimationFrame(tick);
+            };
+
+            window.requestAnimationFrame(tick);
+          });
+        };
+
+        window.addEventListener('load', setupCanonicalVoiceDock);
+      })();
+      // WHY: The one-super sequence should reveal from visually meaningful containers instead of outer spacing shells.
+      // WHAT: Reveals the centered heading and capability lines quickly, while the workspace subtitle and mock own their own half-visible intersection triggers.
+      (() => {
+        const LETTER_INTERVAL_MS = 4;
+        const LETTER_FADE_MS = 72;
+        const LINE_OFFSET_MS = 46;
+
+        const setupOneSuperSequence = () => {
+          const section = document.querySelector('[data-one-super-section]');
+          if (!(section instanceof HTMLElement)) return;
+
+          const heading = section.querySelector('[data-one-super-reveal="heading"]');
+          const typedShell = section.querySelector('[data-one-super-reveal="typed"]');
+          const workspaceCopy = section.querySelector('[data-one-super-reveal="workspace-copy"]');
+          const workspaceStage = section.querySelector('[data-one-super-reveal="workspace-stage"]');
+          const typedLines = Array.from(section.querySelectorAll('[data-type-line]'));
+          if (!(typedShell instanceof HTMLElement) || !typedLines.length) return;
+
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          let typedStarted = false;
+          let typedTimers = [];
+
+          const isFullyVisible = (element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.top >= 0 && rect.bottom <= window.innerHeight;
+          };
+
+          const isRevealReady = (element) => {
+            const rect = element.getBoundingClientRect();
+            const visibleTop = Math.max(rect.top, 0);
+            const visibleBottom = Math.min(rect.bottom, window.innerHeight);
+            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+            return visibleHeight >= (rect.height * 0.35);
+          };
+
+          const isFullyOutside = (element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.bottom <= 0 || rect.top >= window.innerHeight;
+          };
+
+          const showElement = (element) => {
+            if (!(element instanceof HTMLElement)) return;
+            element.classList.remove('is-hidden-instant');
+            element.classList.add('is-visible');
+            showTypedRevealTargets(element);
+          };
+
+          const hideElementInstantly = (element) => {
+            if (!(element instanceof HTMLElement)) return;
+            element.classList.add('is-hidden-instant');
+            element.classList.remove('is-visible');
+            hideTypedRevealTargets(element);
+            window.requestAnimationFrame(() => {
+              element.classList.remove('is-hidden-instant');
+            });
+          };
+
+          const resetTypedLines = () => {
+            typedTimers.forEach((timer) => window.clearTimeout(timer));
+            typedTimers = [];
+            typedStarted = false;
+            typedLines.forEach((line) => {
+              if (!(line instanceof HTMLElement)) return;
+              line.classList.remove('is-visible');
+              line.querySelectorAll('.one-super-typed-char').forEach((character) => {
+                if (!(character instanceof HTMLElement)) return;
+                character.style.animation = 'none';
+                character.style.opacity = '';
+                character.style.filter = '';
+                void character.offsetWidth;
+                character.style.animation = '';
+              });
+            });
+            hideElementInstantly(typedShell);
+          };
+
+          const bindFullVisibility = (element, { onEnter, onExit, observedElement } = {}) => {
+            if (!(element instanceof HTMLElement)) return;
+            const target = observedElement instanceof HTMLElement ? observedElement : element;
+            let visible = false;
+
+            if (isRevealReady(target)) {
+              visible = true;
+              onEnter?.();
+            }
+
+            const localObserver = new IntersectionObserver((entries) => {
+              const entry = entries[0];
+              if (!visible && Boolean(entry?.isIntersecting) && isRevealReady(target)) {
+                visible = true;
+                onEnter?.();
+                return;
+              }
+              if (visible && isFullyOutside(target)) {
+                visible = false;
+                onExit?.();
+              }
+            }, {
+              threshold: [0, 0.35, 1],
+              rootMargin: '0px'
+            });
+
+            localObserver.observe(target);
+          };
+
+          const revealFinal = () => {
+            if (heading instanceof HTMLElement) heading.classList.add('is-visible');
+            typedShell.classList.add('is-visible');
+            typedLines.forEach((line) => {
+              if (!(line instanceof HTMLElement)) return;
+              line.classList.add('is-visible');
+            });
+            if (workspaceCopy instanceof HTMLElement) workspaceCopy.classList.add('is-visible');
+            if (workspaceStage instanceof HTMLElement) workspaceStage.classList.add('is-visible');
+          };
+
+          typedLines.forEach((line) => {
+            prepareTypedRevealCharacters(line, {
+              characterClass: 'one-super-typed-char',
+              characterIntervalMs: LETTER_INTERVAL_MS,
+              fadeDurationMs: LETTER_FADE_MS,
+            });
+          });
+
+          const startTypedSequence = () => {
+            if (typedStarted) return;
+            typedStarted = true;
+
+            if (reduceMotion) {
+              revealFinal();
+              return;
+            }
+
+            showElement(typedShell);
+            typedLines.forEach((line, index) => {
+              if (!(line instanceof HTMLElement)) return;
+              const timer = window.setTimeout(() => {
+                line.classList.add('is-visible');
+              }, index * LINE_OFFSET_MS);
+              typedTimers.push(timer);
+            });
+          };
+
+          if (reduceMotion) {
+            revealFinal();
+            return;
+          }
+
+          bindFullVisibility(heading, {
+            onEnter: () => showElement(heading),
+            onExit: () => hideElementInstantly(heading),
+          });
+          bindFullVisibility(typedShell, {
+            onEnter: startTypedSequence,
+            onExit: resetTypedLines,
+          });
+          bindFullVisibility(workspaceCopy, {
+            onEnter: () => showElement(workspaceCopy),
+            onExit: () => hideElementInstantly(workspaceCopy),
+            observedElement: workspaceCopy.querySelector('.one-super-demo-title'),
+          });
+          bindFullVisibility(workspaceStage, {
+            onEnter: () => showElement(workspaceStage),
+            onExit: () => hideElementInstantly(workspaceStage),
+            observedElement: workspaceStage.querySelector('.workspace-control-grid'),
+          });
+        };
+
+        window.addEventListener('load', setupOneSuperSequence);
+      })();
+      // WHY: Section discovery should feel owned by scroll position rather than one-shot page load timing.
+      // WHAT: Reveals tagged sections once enough of the visual container is in view to feel discoverable and hides them immediately on full exit.
+      (() => {
+        const setupRepeatableScrollReveals = () => {
+          const elements = Array.from(document.querySelectorAll('[data-scroll-reveal], [data-post-brand-reveal]'))
+            .filter((element) => !(element instanceof HTMLElement && element.hasAttribute('data-one-super-reveal')));
+
+          const isFullyVisible = (element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.top >= 0 && rect.bottom <= window.innerHeight;
+          };
+
+          const isRevealReady = (element) => {
+            const rect = element.getBoundingClientRect();
+            const visibleTop = Math.max(rect.top, 0);
+            const visibleBottom = Math.min(rect.bottom, window.innerHeight);
+            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+            return visibleHeight >= (rect.height * 0.35);
+          };
+
+          const isFullyOutside = (element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.bottom <= 0 || rect.top >= window.innerHeight;
+          };
+
+          const revealWithPaint = (element) => {
+            element.classList.remove('is-hidden-instant');
+            window.requestAnimationFrame(() => {
+              window.requestAnimationFrame(() => {
+                element.classList.add('is-visible');
+                showTypedRevealTargets(element);
+              });
+            });
+          };
+
+          elements.forEach((element) => {
+            if (!(element instanceof HTMLElement)) return;
+            let visible = false;
+
+            if (isRevealReady(element)) {
+              visible = true;
+              revealWithPaint(element);
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+              const entry = entries[0];
+              if (!visible && Boolean(entry?.isIntersecting) && isRevealReady(element)) {
+                visible = true;
+                revealWithPaint(element);
+                return;
+              }
+              if (visible && isFullyOutside(element)) {
+                visible = false;
+                element.classList.add('is-hidden-instant');
+                element.classList.remove('is-visible');
+                hideTypedRevealTargets(element);
+                window.requestAnimationFrame(() => {
+                  element.classList.remove('is-hidden-instant');
+                });
+              }
+            }, {
+              threshold: [0, 0.35, 1],
+              rootMargin: '0px'
+            });
+            observer.observe(element);
+          });
+        };
+
+        window.addEventListener('load', setupRepeatableScrollReveals);
       })();
       // WHAT: Initialize the workspace demo from one synchronized keyboard and voice state model.
       (() => {
@@ -1118,31 +1474,86 @@
 
         window.addEventListener('load', setupFactoryStack);
       })();
-      // WHAT: Keep FAQ cards conventional while syncing expand and collapse motion.
+      // WHAT: FAQ cards should expand in flow on hover/focus and also toggle open on touch or click.
       (() => {
-        const setupFaqAccordion = () => {
-          const cards = Array.from(document.querySelectorAll('.faq-card'));
+        const setupFaqCardToggles = () => {
+          const cards = Array.from(document.querySelectorAll('[data-faq-card]'));
           if (!cards.length) return;
 
+          const syncFaqListFixedHeight = () => {
+            const faqList = document.querySelector('.faq-list');
+            if (!(faqList instanceof HTMLElement)) return;
+            const cards = Array.from(faqList.querySelectorAll('[data-faq-card]')).filter((card) => card instanceof HTMLElement);
+            if (!cards.length) return;
+
+            const previousStates = cards.map((card) => card.dataset.open === 'true');
+            const previousFocusStates = cards.map((card) => card.matches(':focus-within'));
+
+            cards.forEach((card) => {
+              card.dataset.open = 'false';
+              const trigger = card.querySelector('.faq-card-trigger');
+              if (trigger instanceof HTMLButtonElement) {
+                trigger.setAttribute('aria-expanded', 'false');
+              }
+            });
+
+            let maxHeight = faqList.scrollHeight;
+
+            cards.forEach((card) => {
+              card.dataset.open = 'true';
+              const trigger = card.querySelector('.faq-card-trigger');
+              if (trigger instanceof HTMLButtonElement) {
+                trigger.setAttribute('aria-expanded', 'true');
+              }
+              maxHeight = Math.max(maxHeight, faqList.scrollHeight);
+              card.dataset.open = 'false';
+              if (trigger instanceof HTMLButtonElement) {
+                trigger.setAttribute('aria-expanded', 'false');
+              }
+            });
+
+            faqList.style.setProperty('--faq-list-fixed-height', `${maxHeight}px`);
+
+            cards.forEach((card, index) => {
+              const shouldOpen = previousStates[index] || previousFocusStates[index];
+              card.dataset.open = shouldOpen ? 'true' : 'false';
+              const trigger = card.querySelector('.faq-card-trigger');
+              if (trigger instanceof HTMLButtonElement) {
+                trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+              }
+            });
+          };
+
           cards.forEach((card) => {
-            const summary = card.querySelector('summary');
-            const body = card.querySelector('.faq-card-body');
-            if (!summary || !body) return;
-            card.classList.toggle('is-open', card.open);
-            card.open = true;
+            if (!(card instanceof HTMLElement)) return;
+            const trigger = card.querySelector('.faq-card-trigger');
+            if (!(trigger instanceof HTMLButtonElement)) return;
 
-            summary.addEventListener('click', (event) => {
-              event.preventDefault();
-              const shouldOpen = !card.classList.contains('is-open');
+            const render = (open) => {
+              card.dataset.open = open ? 'true' : 'false';
+              trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+            };
 
+            render(false);
+
+            trigger.addEventListener('click', () => {
+              const nextOpen = card.dataset.open !== 'true';
               cards.forEach((otherCard) => {
-                otherCard.classList.toggle('is-open', otherCard === card && shouldOpen);
+                if (!(otherCard instanceof HTMLElement)) return;
+                const otherTrigger = otherCard.querySelector('.faq-card-trigger');
+                if (!(otherTrigger instanceof HTMLButtonElement)) return;
+                const isTarget = otherCard === card;
+                otherCard.dataset.open = isTarget && nextOpen ? 'true' : 'false';
+                otherTrigger.setAttribute('aria-expanded', isTarget && nextOpen ? 'true' : 'false');
               });
             });
           });
+
+          syncFaqListFixedHeight();
+          window.addEventListener('resize', syncFaqListFixedHeight);
         };
 
-        window.addEventListener('load', setupFaqAccordion);
+        window.addEventListener('load', setupFaqCardToggles);
       })();
       // WHAT: Animate the workspace structure mockup as a single 2D vertical strip inside one clipped viewport.
       (() => {
@@ -1188,67 +1599,4 @@
         };
 
         window.addEventListener('load', setupWorkspaceStack);
-      })();
-      // WHAT: Gives each visible word its own hover glow while leaving FAQ answer content plain.
-      (() => {
-        const excludedWordGlowSelector = [
-          'script',
-          'style',
-          'svg',
-          'canvas',
-          'textarea',
-          'input',
-          'select',
-          'option',
-          '.faq-card-body',
-          '.punchline-word',
-          '.text-glow-word',
-          '[data-word-glow-skip]',
-        ].join(',');
-        let wrappingScheduled = false;
-
-        const canWrapTextNode = (node) => {
-          if (!node.textContent || !node.textContent.trim()) return false;
-          const parent = node.parentElement;
-          return Boolean(parent && !parent.closest(excludedWordGlowSelector));
-        };
-
-        const wrapTextNode = (node) => {
-          if (!canWrapTextNode(node)) return;
-          const fragment = document.createDocumentFragment();
-          node.textContent.split(/(\s+)/).forEach((part) => {
-            if (!part) return;
-            if (/^\s+$/.test(part)) {
-              fragment.appendChild(document.createTextNode(part));
-              return;
-            }
-            const word = document.createElement('span');
-            word.className = 'text-glow-word';
-            word.textContent = part;
-            fragment.appendChild(word);
-          });
-          node.replaceWith(fragment);
-        };
-
-        const wrapVisibleWords = () => {
-          wrappingScheduled = false;
-          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-            acceptNode: (node) => (canWrapTextNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
-          });
-          const nodes = [];
-          while (walker.nextNode()) nodes.push(walker.currentNode);
-          nodes.forEach(wrapTextNode);
-        };
-
-        const scheduleWrap = () => {
-          if (wrappingScheduled) return;
-          wrappingScheduled = true;
-          window.requestAnimationFrame(wrapVisibleWords);
-        };
-
-        window.addEventListener('load', () => {
-          scheduleWrap();
-          const observer = new MutationObserver(scheduleWrap);
-          observer.observe(document.body, { childList: true, subtree: true });
-        });
       })();

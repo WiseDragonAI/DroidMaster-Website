@@ -1,0 +1,422 @@
+<!doctype html>
+<!--
+  WHY: The public website must make DroidMaster's dense multi-agent UI understandable and credible.
+  WHAT: Desktop-first commercial landing page grounded in the real command deck, with one restrained workflow demo.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#08090b" />
+    <title>DroidMaster | Command Deck For AI Builders</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./landing.js"></script>
+  </head>
+  <body>
+    <nav aria-label="Website version switcher" style="position: fixed; top: -200px; right: 0; z-index: 2147483647; display: flex; justify-content: flex-end; padding: 200px 16px 0 0; pointer-events: none; font-family: Manrope, ui-sans-serif, system-ui, sans-serif;">
+      <div style="pointer-events: auto; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(127,180,255,.44); background: rgba(7,10,14,.88); box-shadow: 0 18px 52px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12); backdrop-filter: blur(18px) saturate(1.2); padding: 5px;">
+        <a href="/#website-versions" style="display: grid; place-items: center; height: 30px; padding: 0 12px; color: #f4f7fb; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-decoration: none; text-transform: uppercase;">Website</a>
+        <a href="/versions/initial-flashy/" title="Initial flashy blue/orange DroidMaster" style="display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #a9b4c2; font-size: 11px; font-weight: 900; text-decoration: none;">01</a>
+        <a href="/versions/prod/" title="Prod version" style="display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #a9b4c2; font-size: 11px; font-weight: 900; text-decoration: none;">02</a>
+        <a href="/versions/local-latest/" aria-current="page" title="Local latest version" style="display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(127,180,255,.76); background: linear-gradient(180deg, rgba(127,180,255,.26), rgba(91,157,255,.1)); color: #7fb4ff; font-size: 11px; font-weight: 900; text-decoration: none;">03</a>
+        <a href="/versions/design-system/" title="Design system adapted version" style="display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #a9b4c2; font-size: 11px; font-weight: 900; text-decoration: none;">04</a>
+        <a href="/" title="Canonical public website" style="display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #a9b4c2; font-size: 11px; font-weight: 900; text-decoration: none;">05</a>
+      </div>
+    </nav>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="DroidMaster home">
+        <span class="brand-mark" aria-hidden="true"><img src="/assets/droids/droid_r2d2.png" alt="" /></span>
+        <span>DroidMaster</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#deck">Command Deck</a>
+        <a href="#problems">Problems</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#install">Install</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Open source command deck for AI builders</p>
+          <h1 id="hero-title">Stop losing context while agents change your app.</h1>
+          <p class="hero-lede">
+            DroidMaster keeps your coding agents, browser preview, files, terminal output, tool calls, and voice prompts in one command deck.
+            See the work, steer the next action, and verify the result without rebuilding context in every window.
+          </p>
+          <div class="hero-actions" aria-label="Primary actions">
+            <button class="button button-primary" type="button" data-copy-command="npx droidmaster web">
+              <span data-copy-command-label>Start the local command deck</span>
+            </button>
+            <a class="button button-secondary" href="https://github.com/WiseDragonAI/DroidMaster" target="_blank" rel="noopener noreferrer">View the source</a>
+            <a class="button button-secondary" href="https://discord.gg/QzGH2XwySv" target="_blank" rel="noopener noreferrer">Join Discord</a>
+          </div>
+          <dl class="hero-facts" aria-label="Product facts">
+            <div>
+              <dt>Agents</dt>
+              <dd>multi-pane worker state</dd>
+            </div>
+            <div>
+              <dt>Browser</dt>
+              <dd>preview beside the worker</dd>
+            </div>
+            <div>
+              <dt>Local / VPS</dt>
+              <dd>runtime under your control</dd>
+            </div>
+          </dl>
+          <div class="droid-roster" aria-label="DroidMaster droid roster">
+            <img src="/assets/droids/droid_r2d2.png" alt="DroidMaster astromech unit" />
+            <img src="/assets/droids/droid_bb8.png" alt="DroidMaster scout unit" />
+            <img src="/assets/droids/droid_hk47.png" alt="DroidMaster protocol unit" />
+            <img src="/assets/droids/droid_ig88.png" alt="DroidMaster sentinel unit" />
+            <img src="/assets/droids/droid_b1.png" alt="DroidMaster worker unit" />
+            <span>Droid groups for parallel work</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="install install-quick" id="install" aria-labelledby="install-title">
+        <div>
+          <p class="eyebrow">Install</p>
+          <h2 id="install-title">Start locally. Keep control of the runtime.</h2>
+          <p>Launch the web command deck from your terminal, then connect it to the model tools and workspaces you already use.</p>
+        </div>
+        <div class="install-command">
+          <code>npx droidmaster web</code>
+          <button type="button" data-copy-command="npx droidmaster web">Copy install command</button>
+        </div>
+      </section>
+
+      <section class="product-shot" aria-labelledby="product-shot-title">
+        <div class="section-heading product-shot-heading">
+          <p class="eyebrow">Real command deck shape</p>
+          <h2 id="product-shot-title">A high-density workspace only works when the browser, agent, and next prompt stay visible.</h2>
+        </div>
+        <aside class="deck-preview" id="deck" aria-label="DroidMaster command deck preview">
+          <div class="deck-sidebar" aria-hidden="true">
+            <span><img src="/assets/droids/droid_r2d2.png" alt="" /></span>
+            <span><img src="/assets/droids/droid_bb8.png" alt="" /></span>
+            <span><img src="/assets/droids/droid_hk47.png" alt="" /></span>
+            <span><img src="/assets/droids/droid_ig88.png" alt="" /></span>
+            <span><img src="/assets/droids/droid_c3po.png" alt="" /></span>
+          </div>
+          <div class="deck-grid">
+            <article class="agent-pane agent-pane-active">
+              <div class="agent-head">
+                <div>
+                  <strong>SES</strong>
+                  <span>MOH · gpt-5.4 / high</span>
+                </div>
+                <em>37%</em>
+              </div>
+              <div class="message-stack">
+                <p>Worktree rebase verified. Local edits preserved.</p>
+                <p class="link-line">pipeline/trustly-sdk-android-implementation</p>
+                <div class="tool-chip">Tool Calls <strong>3 completed</strong></div>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+
+            <article class="agent-pane">
+              <div class="agent-head">
+                <div>
+                  <strong>IMAGES</strong>
+                  <span>image-gateway-s3 · medium</span>
+                </div>
+                <em>80%</em>
+              </div>
+              <div class="message-stack">
+                <p>Continuing toward 100% coverage with targeted failure-path injection.</p>
+                <div class="voice-note">0:02</div>
+                <div class="tool-chip">Tool Calls <strong>19 completed</strong></div>
+                <pre>go test ./cmd/mops -coverprofile=/tmp/mops.cover.out</pre>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+
+            <article class="agent-pane">
+              <div class="agent-head">
+                <div>
+                  <strong>CLI</strong>
+                  <span>gpt-5.3-codex / medium</span>
+                </div>
+                <em>61%</em>
+              </div>
+              <div class="message-stack">
+                <p>Host-only availability note corrected. Container route remains separate.</p>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+
+            <article class="agent-pane">
+              <div class="agent-head">
+                <div>
+                  <strong>DEV WEB</strong>
+                  <span>gpt-5.3-codex / medium</span>
+                </div>
+                <em>87%</em>
+              </div>
+              <div class="message-stack terminal-stream">
+                <p>[supervisor] worktree cwd missing; switched to repo root cwd</p>
+                <p>/host-home/dev/MOH/.worktrees/web-mvp-readonly-orders</p>
+              </div>
+              <div class="prompt-row"><span>&gt;</span><span>Message</span><b></b></div>
+            </article>
+          </div>
+        </aside>
+      </section>
+
+      <section class="explain" aria-labelledby="explain-title">
+        <div>
+          <p class="eyebrow">The core problem</p>
+          <h2 id="explain-title">AI work breaks when the instruction, execution, and result live in different places.</h2>
+        </div>
+        <div class="explain-grid">
+          <article>
+            <span>01</span>
+            <h3>You lose worker state</h3>
+            <p>Agents run, wait, fail, or ask for input while their status is buried in separate terminals or chat histories.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>You inspect results out of context</h3>
+            <p>The browser shows what changed, but the prompt, tool output, and next instruction are somewhere else.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>You become the router</h3>
+            <p>You copy logs, screenshots, paths, and next instructions between tools instead of directing the work.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="problem-sections" id="problems" aria-labelledby="problem-sections-title">
+        <div class="section-heading">
+          <p class="eyebrow">Features by problem solved</p>
+          <h2 id="problem-sections-title">Every feature exists to solve one context problem.</h2>
+        </div>
+
+        <div class="problem-list">
+        <article class="problem-feature">
+          <div class="problem-copy">
+            <p class="problem-label">Problem 01</p>
+            <h3>The agent is changing the app, but the app is in another window.</h3>
+            <p>You ask for a UI change, switch to the browser, notice the wrong state, switch back to the agent, paste context, then repeat. DroidMaster keeps the worker and browser preview in the same workspace so the next instruction can reference what you are already seeing.</p>
+            <p class="outcome-line">Outcome: inspect the result while the agent still has task context.</p>
+          </div>
+          <div class="problem-visual browser-agent-visual" aria-hidden="true">
+            <div class="mini-agent">
+              <strong>DEV WEB</strong>
+              <span>Update the pricing section and verify layout.</span>
+              <em>Tool Calls · 5 completed</em>
+            </div>
+            <div class="mini-browser">
+              <div class="mini-browser-bar"><span></span><span></span><span></span><strong>localhost:5173</strong></div>
+              <div class="mini-page">
+                <b>Pricing</b>
+                <i></i><i></i><i></i>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="problem-feature">
+          <div class="problem-copy">
+            <p class="problem-label">Problem 02</p>
+            <h3>Multiple agents become invisible background processes.</h3>
+            <p>Running more than one agent should not mean losing track of who is doing what. DroidMaster gives each worker a pane with status, context, tool calls, and its own prompt row.</p>
+            <p class="outcome-line">Outcome: compare progress without reopening terminals or scrolling through one giant transcript.</p>
+          </div>
+          <div class="problem-visual multi-agent-visual" aria-hidden="true">
+            <span>SES <b>37%</b></span>
+            <span>IMAGES <b>80%</b></span>
+            <span>CLI <b>61%</b></span>
+            <span>DEV WEB <b>87%</b></span>
+          </div>
+        </article>
+
+        <article class="problem-feature">
+          <div class="problem-copy">
+            <p class="problem-label">Problem 03</p>
+            <h3>Dense AI work is too slow when every action needs the mouse.</h3>
+            <p>When the deck has agents, files, browser, and tool output, tiny controls become friction. QWER and ASD make the workspace feel physical: move focus, switch surfaces, scroll history, and trigger voice input from the keyboard.</p>
+            <p class="outcome-line">Outcome: navigate parallel work without breaking flow.</p>
+          </div>
+          <div class="problem-visual control-visual" aria-hidden="true">
+            <div class="mouse-friction">
+              <span></span><span></span><span></span><span></span>
+              <b>Mouse hunt</b>
+            </div>
+            <div class="control-arrow">→</div>
+            <div class="keyboard-control">
+              <span>Q</span><span>W</span><span>E</span><span class="voice-key">R</span>
+              <span>A</span><span>S</span><span>D</span>
+              <b>Focus keys</b>
+            </div>
+          </div>
+        </article>
+
+        <article class="problem-feature">
+          <div class="problem-copy">
+            <p class="problem-label">Problem 04</p>
+            <h3>Long prompts interrupt the thing you are trying to inspect.</h3>
+            <p>Typing a detailed instruction while reading UI state or reviewing output is slow. Voice notes let you explain the next change while staying in the active workspace, then insert that instruction as a visible prompt card.</p>
+            <p class="outcome-line">Outcome: capture intent without leaving the context that created it.</p>
+          </div>
+          <div class="problem-visual voice-problem-visual" aria-hidden="true">
+            <div class="voice-bars"><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="prompt-card">
+              <strong>Voice prompt</strong>
+              <p>Make the browser panel prove the copy, then verify spacing.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="problem-feature">
+          <div class="problem-copy">
+            <p class="problem-label">Problem 05</p>
+            <h3>Agent tools try to pull you into one provider workflow.</h3>
+            <p>You may already use Codex, Claude Code, or both. DroidMaster wraps the tools you trust instead of turning the operating surface into another model subscription.</p>
+            <p class="outcome-line">Outcome: keep your model workflow and upgrade the surface around it.</p>
+          </div>
+          <div class="problem-visual provider-visual" aria-hidden="true">
+            <span><b>◎</b> Codex</span>
+            <i></i>
+            <span><b>◇</b> Claude Code</span>
+          </div>
+        </article>
+
+        <article class="problem-feature">
+          <div class="problem-copy">
+            <p class="problem-label">Problem 06</p>
+            <h3>Cloud convenience can make local trust unclear.</h3>
+            <p>AI agents need access to real files, credentials, and runtime state. DroidMaster can run locally or on your own VPS, so you choose what workspaces and secrets the runtime can touch.</p>
+            <p class="outcome-line">Outcome: use a powerful command deck without giving up runtime control.</p>
+          </div>
+          <div class="problem-visual runtime-visual" aria-hidden="true">
+            <span>Local deck</span>
+            <i></i>
+            <span>Chosen workspaces</span>
+            <i></i>
+            <span>Own VPS</span>
+          </div>
+        </article>
+        </div>
+      </section>
+
+      <section class="workflow" id="workflow" aria-labelledby="workflow-title">
+        <div class="section-heading">
+          <p class="eyebrow">The workflow loop</p>
+          <h2 id="workflow-title">One loop: focus the worker, speak the intent, verify the change.</h2>
+          <p>The animation is not a product tour. It teaches the control model behind the real deck: move between surfaces, issue the instruction, watch the tool calls, and inspect the result in place.</p>
+        </div>
+
+        <div data-workspace-control-demo class="workspace-control-demo">
+          <div class="workspace-control-frame">
+            <div class="workspace-control-grid">
+              <div class="screen-window workspace-control-window">
+                <div class="screen-window-bar">
+                  <div class="screen-window-dots"><span></span><span></span><span></span></div>
+                  <span class="screen-window-title" data-control-status>ready</span>
+                </div>
+                <div class="screen-window-body">
+                  <div class="workspace-switcher" data-workspace-switcher>
+                    <div class="workspace-track" data-workspace-track>
+                      <div class="workspace-slide" data-workspace-slide data-workspace-tone="green">
+                        <div class="workspace-board workspace-board--four">
+                          <div class="workspace-column workspace-column--focus" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">FE</span><span class="workspace-name">Frontend</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--mid"></div><div class="workspace-line workspace-line--short"></div></div>
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">BE</span><span class="workspace-name">Backend</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--short"></div><div class="workspace-line workspace-line--mid"></div></div>
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">OP</span><span class="workspace-name">Agent Ops</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--mid"></div><div class="workspace-line workspace-line--short"></div></div>
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">DB</span><span class="workspace-name">Data</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--mid"></div><div class="workspace-line workspace-line--mid"></div></div>
+                        </div>
+                      </div>
+                      <div class="workspace-slide" data-workspace-slide data-workspace-tone="blue">
+                        <div class="workspace-board workspace-board--four">
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">AD</span><span class="workspace-name">Campaigns</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--mid"></div><div class="workspace-line workspace-line--short"></div></div>
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">CP</span><span class="workspace-name">Copy</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--mid"></div></div>
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">RV</span><span class="workspace-name">Review</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--mid"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--short"></div></div>
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">PB</span><span class="workspace-name">Publish</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--long"></div><div class="workspace-line workspace-line--short"></div><div class="workspace-line workspace-line--mid"></div></div>
+                        </div>
+                      </div>
+                      <div class="workspace-slide" data-workspace-slide data-workspace-tone="orange">
+                        <div class="workspace-board workspace-board--webview">
+                          <div class="workspace-column workspace-column--span3" data-workspace-column data-static-column="true"><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">WEB</span><span class="workspace-name">Browser View</span></div><div class="workspace-column-head"></div><div class="workspace-webview" data-workspace-webview data-reloading="false" data-changed="false"><div class="workspace-side-project"><div class="workspace-side-project-brand"><span class="workspace-side-project-logo" data-side-project-logo>DM</span><span class="workspace-side-project-title">SIDE PROJECT</span></div></div></div></div>
+                          <div class="workspace-column" data-workspace-column><div class="workspace-identity"><span class="workspace-icon" aria-hidden="true">QA</span><span class="workspace-name">Verify</span></div><div class="workspace-column-head"></div><div class="workspace-line workspace-line--mid"></div><div class="workspace-line workspace-line--short"></div><div class="workspace-line workspace-line--short"></div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="workspace-control-side">
+                <div class="workspace-keyboard-widget">
+                  <span class="workspace-keyboard-status" data-control-step>READY</span>
+                  <div class="workspace-keyboard-grid">
+                    <div class="workspace-keyboard-row">
+                      <button type="button" data-control-key="q" class="workspace-key">Q</button>
+                      <button type="button" data-control-key="w" class="workspace-key">W</button>
+                      <button type="button" data-control-key="e" class="workspace-key">E</button>
+                      <button type="button" data-control-key="r" class="workspace-key workspace-key--voice">R</button>
+                    </div>
+                    <div class="workspace-keyboard-row workspace-keyboard-row--home">
+                      <button type="button" data-control-key="a" class="workspace-key">A</button>
+                      <button type="button" data-control-key="s" class="workspace-key">S</button>
+                      <button type="button" data-control-key="d" class="workspace-key">D</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="voice-shell workspace-voice-widget" data-voice-widget>
+                  <div class="voice-stage">
+                    <div class="voice-icon-ring" aria-hidden="true">VOICE</div>
+                    <div class="voice-history" aria-hidden="true"></div>
+                  </div>
+                  <div class="voice-meter" aria-hidden="true"><div class="voice-meter-fill"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq" id="faq" aria-labelledby="faq-title">
+        <p class="eyebrow">FAQ</p>
+        <h2 id="faq-title">Frequently asked questions</h2>
+        <details open>
+          <summary>Why is the interface dense?</summary>
+          <p>Because parallel AI work has real state. DroidMaster makes that state visible and keyboard-navigable instead of hiding it in separate tools.</p>
+        </details>
+        <details>
+          <summary>Do I need a new AI subscription?</summary>
+          <p>No. DroidMaster is the command deck around the model tools you already use, not a replacement subscription.</p>
+        </details>
+        <details>
+          <summary>Can I keep work local?</summary>
+          <p>Yes. Run locally or on your own VPS and decide which folders, credentials, and workspaces are exposed.</p>
+        </details>
+        <details>
+          <summary>Why not use a normal chat UI?</summary>
+          <p>A normal chat UI hides browser state, tool calls, worker state, and file context. DroidMaster is for work where those things need to stay visible together.</p>
+        </details>
+      </section>
+
+      <footer class="site-footer">
+        <a class="brand" href="/" aria-label="DroidMaster home">
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/droids/droid_r5d4.png" alt="" /></span>
+          <span>DroidMaster</span>
+        </a>
+        <div class="footer-links" aria-label="Footer links">
+          <a href="https://github.com/WiseDragonAI/DroidMaster" target="_blank" rel="noopener noreferrer">Source</a>
+          <a href="https://discord.gg/QzGH2XwySv" target="_blank" rel="noopener noreferrer">Discord</a>
+          <a href="mailto:contact@wisedragon.ai">Contact</a>
+          <span>Privacy and legal pages pending for launch readiness.</span>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

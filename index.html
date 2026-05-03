@@ -5,20 +5,27 @@
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <title>DroidMaster | Command Deck For AI Builders</title>
+    <script>
+      if (window.location.pathname === '/versions') {
+        window.location.replace('/versions/');
+      }
+    </script>
     <style>
       :root {
         --primary-h: 204;
         --primary-s: 95;
+        --primary-v: 100;
         --primary-rgb: 13 165 255;
         --primary-soft-rgb: 12 152 235;
         --primary-ui-rgb: 11 135 209;
         --primary-muted-rgb: 8 107 166;
-        --accent-h: 30;
-        --accent-s: 82;
-        --accent-rgb: 224 132 40;
-        --accent-soft-rgb: 207 122 37;
-        --accent-ui-rgb: 184 109 33;
-        --accent-muted-rgb: 146 86 26;
+        --accent-h: 268;
+        --accent-s: 60;
+        --accent-v: 62;
+        --accent-rgb: 107 63 158;
+        --accent-soft-rgb: 99 58 145;
+        --accent-ui-rgb: 88 52 129;
+        --accent-muted-rgb: 70 41 103;
         --offer-glow-power: .72;
       }
     </style>
@@ -54,20 +61,30 @@
       };
     </script>
     <script src='https://cdn.tailwindcss.com'></script>
+    <script type='module' src='/src/main-entry.js'></script>
     <script type='module' src='/src/workspace-demo.js'></script>
     <script type='module' src='/src/page-behaviors.js'></script>
     <link rel='preconnect' href='https://fonts.googleapis.com' />
     <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
     <link href='https://fonts.googleapis.com/css2?family=Aldrich&family=Audiowide&family=Barlow+Condensed:wght@600;700&family=Black+Ops+One&family=Bungee+Inline&family=Chakra+Petch:wght@700&family=Changa+One&family=Electrolize&family=Encode+Sans+Semi+Condensed:wght@700;800&family=Exo+2:wght@700;800&family=Jura:wght@700&family=Kanit:wght@700&family=Michroma&family=Orbitron:wght@500;700;800&family=Oxanium:wght@700&family=Quantico:wght@700&family=Rajdhani:wght@500;600;700&family=Saira:wght@700;800&family=Saira+Semi+Condensed:wght@700;800&family=Saira+Stencil+One&family=Share+Tech+Mono&family=Space+Grotesk:wght@700&family=Syncopate:wght@700&family=Tektur:wght@700&family=Titillium+Web:wght@700;900&family=Tomorrow:wght@700;800&family=Turret+Road:wght@700&family=Ubuntu:wght@400;500;700&family=Zen+Dots&display=swap' rel='stylesheet' />
-    <link rel='stylesheet' href='/src/styles.css' />
   </head>
-  <body class='relative overflow-x-hidden bg-bg0 text-text0'>
+  <body class='theme-voice-bluescreen df-page relative overflow-x-hidden'>
+    <nav aria-label='Website version switcher' style='position: fixed; top: -200px; right: 0; z-index: 2147483647; display: flex; justify-content: flex-end; padding: 200px 16px 0 0; pointer-events: none; font-family: Ubuntu, ui-sans-serif, system-ui, sans-serif;'>
+      <div style='pointer-events: auto; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(13,165,255,.44); background: rgba(7,10,14,.88); box-shadow: 0 18px 52px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12); backdrop-filter: blur(18px) saturate(1.2); padding: 5px;'>
+        <a href='/versions/' style='display: grid; place-items: center; height: 30px; padding: 0 12px; color: #f4f7fb; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-decoration: none; text-transform: uppercase;'>Website</a>
+        <a href='/versions/initial-flashy/' title='Initial flashy blue/purple DroidMaster' style='display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #b7aea2; font-size: 11px; font-weight: 900; text-decoration: none;'>01</a>
+        <a href='/versions/prod/' title='Prod version' style='display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #b7aea2; font-size: 11px; font-weight: 900; text-decoration: none;'>02</a>
+        <a href='/versions/local-latest/' title='Local latest version' style='display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #b7aea2; font-size: 11px; font-weight: 900; text-decoration: none;'>03</a>
+        <a href='/versions/design-system/' title='Design system adapted version' style='display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.045); color: #b7aea2; font-size: 11px; font-weight: 900; text-decoration: none;'>04</a>
+        <a href='/' aria-current='page' title='Canonical public website' style='display: grid; place-items: center; width: 32px; height: 30px; border: 1px solid rgba(13,165,255,.76); background: linear-gradient(180deg, rgba(13,165,255,.26), rgba(107,63,158,.18)); color: #0da5ff; font-size: 11px; font-weight: 900; text-decoration: none;'>05</a>
+      </div>
+    </nav>
     <section class='accent-tuner' data-color-panel data-color-target='secondary' data-debug-control hidden>
       <div class='accent-tuner-header'>
         <p class='accent-tuner-label' data-color-target-label>Secondary Accent</p>
-        <p class='accent-tuner-value' data-color-summary>30deg · 82% · 88%</p>
+        <p class='accent-tuner-value' data-color-summary>268deg · 60% · 62%</p>
       </div>
-      <p class='accent-tuner-note' data-color-note>Auto-cycles between hue 30 and 40 when animations are on. Turn animations off to tune hue manually.</p>
+      <p class='accent-tuner-note' data-color-note>Auto-cycles between hue 264 and 276 when animations are on. Turn animations off to tune hue manually.</p>
       <div class='accent-tuner-targets'>
         <button type='button' class='accent-tuner-target' data-color-target-option='primary' data-active='false' aria-pressed='false'>Primary</button>
         <button type='button' class='accent-tuner-target' data-color-target-option='secondary' data-active='true' aria-pressed='true'>Secondary</button>
@@ -78,7 +95,7 @@
       </div>
       <div class='accent-tuner-row'>
         <p class='accent-tuner-label' data-color-hue-label>Hue Auto</p>
-        <p class='accent-tuner-value' data-color-hue-value>30deg</p>
+        <p class='accent-tuner-value' data-color-hue-value>268deg</p>
       </div>
       <input data-color-hue-slider class='accent-tuner-range' type='range' min='0' max='359' value='48' disabled />
       <div class='accent-tuner-scale'>
@@ -88,9 +105,9 @@
       </div>
       <div class='accent-tuner-row'>
         <p class='accent-tuner-label'>Saturation</p>
-        <p class='accent-tuner-value' data-color-saturation-value>82%</p>
+        <p class='accent-tuner-value' data-color-saturation-value>60%</p>
       </div>
-      <input data-color-saturation-slider class='accent-tuner-range' type='range' min='0' max='100' value='82' />
+      <input data-color-saturation-slider class='accent-tuner-range' type='range' min='0' max='100' value='60' />
       <div class='accent-tuner-scale'>
         <span>Gray</span>
         <span>Colored</span>
@@ -98,9 +115,9 @@
       </div>
       <div class='accent-tuner-row'>
         <p class='accent-tuner-label'>Value</p>
-        <p class='accent-tuner-value' data-color-luminosity-value>88%</p>
+        <p class='accent-tuner-value' data-color-luminosity-value>62%</p>
       </div>
-      <input data-color-luminosity-slider class='accent-tuner-range' type='range' min='0' max='100' value='88' />
+      <input data-color-luminosity-slider class='accent-tuner-range' type='range' min='0' max='100' value='62' />
       <div class='accent-tuner-scale'>
         <span>Black</span>
         <span>Lit</span>
@@ -108,14 +125,22 @@
       </div>
     </section>
     <button type='button' class='accent-tuner-reopen' data-color-reopen data-debug-control hidden>Palette</button>
-    <div class='site-backdrop fixed inset-0 -z-20'>
-      <div class='site-glow site-glow--primary absolute'></div>
-      <div class='site-glow site-glow--secondary absolute'></div>
-    </div>
+    <div class='site-backdrop fixed inset-0 -z-20'></div>
 
     <div class='fixed inset-0 -z-10 overflow-hidden'>
       <div class='site-star-layer site-star-layer--far absolute'></div>
       <div class='site-star-layer site-star-layer--mid absolute'></div>
+      <div class='site-supernova-layer absolute'>
+        <span class='site-supernova-origin' aria-hidden='true'>
+          <span class='site-supernova-gas site-supernova-gas--far'></span>
+          <span class='site-supernova-star'></span>
+          <span class='site-supernova-shock'></span>
+          <span class='site-supernova-gas site-supernova-gas--mid'></span>
+          <span class='site-supernova-gas site-supernova-gas--near'></span>
+          <span class='site-supernova-filament site-supernova-filament--a'></span>
+          <span class='site-supernova-filament site-supernova-filament--b'></span>
+        </span>
+      </div>
       <div class='site-star-layer site-star-layer--near absolute'></div>
     </div>
 
@@ -223,7 +248,7 @@
           <text class='brand-cap-text brand-cap-stroke' data-brand-title x='0' y='98' textLength='1120' lengthAdjust='spacingAndGlyphs'>DROID MASTER</text>
         </svg>
       </section>
-      <section class='rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-8 shadow-frame'>
+      <section class='df-card'>
         <div>
           <div class='flex justify-end'>
             <button class='brand-control-button ml-6 mt-4' type='button' data-punchline-font-cycle data-debug-control hidden title='Left click next, right click previous'>Punch 01/15</button>
@@ -257,7 +282,7 @@
             </a>
           </div>
 	          <div class='hero-separator mt-[35px] h-px w-full'></div>
-	          <h2 class='mt-5 whitespace-nowrap font-body text-[clamp(1.6rem,2.7vw,2.45rem)] font-semibold leading-[1.02] text-white'>Where <span class='text-amber0'>Power users</span> are <span class='text-blue0'>struggling</span>?</h2>
+	          <h2 class='problem-section-title mt-5 whitespace-nowrap font-body text-[clamp(1.6rem,2.7vw,2.45rem)] font-semibold leading-[1.02] text-white'>Where <span class='text-amber0'>Power users</span> are <span class='text-blue0'>struggling</span>?</h2>
 	          <div class='mt-8 grid gap-5 md:grid-cols-3'>
           <article class='rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(21,21,21,.96),rgba(15,15,15,.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
             <div class='primary-soft-surface flex h-[154px] items-center rounded-sm border border-blue0/30 p-2'>
@@ -276,7 +301,7 @@
                 </div>
               </div>
             </div>
-            <p class='mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>Multi context</span> is now the <span class='text-blue0'>default mode</span>.</p>
+            <p class='problem-caption mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>Multi context</span> is now the <span class='text-blue0'>default mode</span>.</p>
           </article>
           <article class='rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(21,21,21,.96),rgba(15,15,15,.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
             <div class='secondary-soft-surface flex h-[154px] items-center rounded-sm border border-amber0/45 p-3'>
@@ -293,7 +318,7 @@ qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7
                 </div>
               </div>
             </div>
-            <p class='mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>CLI</span> tools are <span class='text-amber0'>HARD</span> to read.</p>
+            <p class='problem-caption mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>CLI</span> tools are <span class='text-amber0'>HARD</span> to read.</p>
           </article>
           <article class='rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(21,21,21,.96),rgba(15,15,15,.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
             <div class='primary-soft-surface rounded-sm border border-blue0/30 p-3'>
@@ -353,16 +378,48 @@ qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7
                 </div>
               </div>
             </div>
-            <p class='mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>Typing</span> is <span class='text-amber0'>slow</span>, <span class='text-blue0'>speaking</span> is <span class='text-blue0'>fast</span>.</p>
+            <p class='problem-caption mt-4 text-[clamp(1.2rem,1.65vw,1.4rem)] leading-[1.45] text-text0'><span class='text-amber0'>Typing</span> is <span class='text-amber0'>slow</span>, <span class='text-blue0'>speaking</span> is <span class='text-blue0'>fast</span>.</p>
           </article>
           </div>
         </div>
       </section>
 
-      <section class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-6 shadow-panel'>
-        <h2 class='mb-2 font-body text-[clamp(1.6rem,2.8vw,2.7rem)] font-semibold leading-[1.02] text-white'>One super app: code, files, images and browser</h2>
-        <p class='mb-4 max-w-[78ch] text-[17px] leading-7 text-text1'><span class='text-blue0'>Fast navigation</span> across every work surface, then <span class='text-amber0'>voice prompting</span> to create, edit, inspect, and ship.</p>
-        <div data-workspace-control-demo tabindex='0' class='workspace-control-demo mb-6 rounded-sm border border-line0/90 bg-[linear-gradient(180deg,rgba(18,18,18,.96),rgba(13,13,13,.98))] shadow-[inset_0_1px_0_rgba(255,255,255,.03),0_12px_28px_rgba(0,0,0,.34)]'>
+      <section class='one-super-heading' aria-labelledby='one-super-app-title'>
+        <h2 id='one-super-app-title' class='one-super-heading-title'>One Super App</h2>
+        <p class='df-copy df-muted one-super-heading-copy'>Working on your Claude and/or Codex subscription.<br>Unifying coding, browser, images, and agents that you never lose.</p>
+      </section>
+
+      <section class='df-card one-super-card mt-6'>
+        <div class='df-card-grid one-super-grid'>
+          <article class='one-super-feature'>
+            <span class='df-kicker'>01</span>
+            <h3 class='df-copy one-super-feature-title'>Many workspaces, multi-session.</h3>
+            <p class='df-copy df-muted one-super-feature-copy'>Keep your agents organized and persistent across restarts.</p>
+          </article>
+          <article class='one-super-feature'>
+            <span class='df-kicker'>02</span>
+            <h3 class='df-copy one-super-feature-title'>In-app browser.</h3>
+            <p class='df-copy df-muted one-super-feature-copy'>Speak to design your software while inspecting the result.</p>
+          </article>
+          <article class='one-super-feature'>
+            <span class='df-kicker'>03</span>
+            <h3 class='df-copy one-super-feature-title'>Works with Claude and/or Codex subscription.</h3>
+            <p class='df-copy df-muted one-super-feature-copy'>Use your existing subscription with no hacks.</p>
+          </article>
+          <article class='one-super-feature'>
+            <span class='df-kicker'>04</span>
+            <h3 class='df-copy one-super-feature-title'>Control access to your computer.</h3>
+            <p class='df-copy df-muted one-super-feature-copy'>Run from a container and scope what the agent can reach.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class='one-super-demo-copy mt-6' aria-labelledby='one-super-demo-title'>
+        <h2 id='one-super-demo-title' class='one-super-demo-title'>Fast <strong>Keyboard Navigation</strong> across <strong>workspaces</strong><br>Stay <strong>organized</strong> and ship faster than ever.</h2>
+      </section>
+
+      <section class='one-super-demo-stage mt-4'>
+        <div data-workspace-control-demo tabindex='0' class='workspace-control-demo'>
           <div class='workspace-control-frame'>
           <div class='workspace-control-grid'>
             <div class='screen-window workspace-control-window'>
@@ -420,69 +477,68 @@ qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7
                   </div>
                 </div>
               </div>
-              <div class='voice-shell workspace-voice-widget' data-voice-widget>
-                          <div class='voice-stage'>
-                            <div class='voice-icon-ring'>
-                              <svg viewBox='0 0 96 96' class='h-10 w-10 text-blue0' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
-                                <rect x='34' y='16' width='28' height='42' rx='14' stroke='currentColor' stroke-width='6'/>
-                                <path d='M24 44C24 57.2548 34.7452 68 48 68C61.2548 68 72 57.2548 72 44' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
-                                <path d='M48 68V80' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
-                                <path d='M36 80H60' stroke='currentColor' stroke-width='6' stroke-linecap='round'/>
-                              </svg>
-                            </div>
-                            <div class='voice-history' aria-hidden='true'>
-                              <div class='voice-history-track'>
-                                <div class='voice-history-set'>
-                                  <span class='voice-wave voice-wave--1'></span>
-                                  <span class='voice-wave voice-wave--4'></span>
-                                  <span class='voice-wave voice-wave--2'></span>
-                                  <span class='voice-wave voice-wave--6'></span>
-                                  <span class='voice-wave voice-wave--3'></span>
-                                  <span class='voice-wave voice-wave--8'></span>
-                                  <span class='voice-wave voice-wave--5'></span>
-                                  <span class='voice-wave voice-wave--10'></span>
-                                  <span class='voice-wave voice-wave--2'></span>
-                                  <span class='voice-wave voice-wave--7'></span>
-                                  <span class='voice-wave voice-wave--11'></span>
-                                  <span class='voice-wave voice-wave--9'></span>
-                                  <span class='voice-wave voice-wave--12'></span>
-                                  <span class='voice-wave voice-wave--4'></span>
-                                  <span class='voice-wave voice-wave--3'></span>
-                                  <span class='voice-wave voice-wave--7'></span>
-                                </div>
-                                <div class='voice-history-set' aria-hidden='true'>
-                                  <span class='voice-wave voice-wave--1'></span>
-                                  <span class='voice-wave voice-wave--4'></span>
-                                  <span class='voice-wave voice-wave--2'></span>
-                                  <span class='voice-wave voice-wave--6'></span>
-                                  <span class='voice-wave voice-wave--3'></span>
-                                  <span class='voice-wave voice-wave--8'></span>
-                                  <span class='voice-wave voice-wave--5'></span>
-                                  <span class='voice-wave voice-wave--10'></span>
-                                  <span class='voice-wave voice-wave--2'></span>
-                                  <span class='voice-wave voice-wave--7'></span>
-                                  <span class='voice-wave voice-wave--11'></span>
-                                  <span class='voice-wave voice-wave--9'></span>
-                                  <span class='voice-wave voice-wave--12'></span>
-                                  <span class='voice-wave voice-wave--4'></span>
-                                  <span class='voice-wave voice-wave--3'></span>
-                                  <span class='voice-wave voice-wave--7'></span>
-                                </div>
-                              </div>
-                  </div>
+              <div class='v1-canonical-voice workspace-voice-widget' data-voice-widget data-v1-canonical-voice>
+                <div class='v1-control-dock'>
+                  <button class='terminal-button terminal-button--stop terminal-button--stack' type='button' aria-label='Stop recording'>
+                    <span class='terminal-button__key'>Esc</span>
+                    <span class='terminal-button__glyph'>&#9632;</span>
+                    <span class='terminal-button__label'>STOP</span>
+                  </button>
+                  <section class='v1-wave-panel' data-v1-wave-panel aria-label='Voice waveform'>
+                    <div class='v1-wave-timer'>00:18</div>
+                    <svg class='v1-wave-svg' viewBox='0 0 1000 100' preserveAspectRatio='none' aria-hidden='true'>
+                      <defs>
+                        <linearGradient id='v1RootWaveAreaGradient' x1='0' y1='0' x2='0' y2='1'>
+                          <stop offset='0%' stop-color='var(--voice-workspace-primary)' stop-opacity='0.72'></stop>
+                          <stop offset='100%' stop-color='var(--voice-graph-secondary)' stop-opacity='0.72'></stop>
+                        </linearGradient>
+                        <linearGradient id='v1RootWaveCoreGradient' x1='0' y1='0' x2='0' y2='1'>
+                          <stop offset='0%' stop-color='var(--voice-workspace-primary)' stop-opacity='0.24'></stop>
+                          <stop offset='100%' stop-color='var(--voice-graph-secondary)' stop-opacity='0.18'></stop>
+                        </linearGradient>
+                      </defs>
+                      <path class='v1-wave-area-path' fill='url(#v1RootWaveAreaGradient)' d='M0 100H1000V100H0z'></path>
+                      <path class='v1-wave-core-path' fill='url(#v1RootWaveCoreGradient)' d='M0 100H1000V100H0z'></path>
+                    </svg>
+                  </section>
+                  <aside class='v1-meter-panel' aria-label='Voice level'>
+                    <div class='v1-meter-track'><div class='v1-meter-fill'></div></div>
+                  </aside>
+                  <button class='terminal-button terminal-button--send terminal-button--stack' type='button' aria-label='Send voice prompt'>
+                    <span class='terminal-button__key'>R</span>
+                    <span class='terminal-button__glyph'>&#10095;</span>
+                    <span class='terminal-button__label'>SEND</span>
+                  </button>
                 </div>
-                        <div class='voice-meter' aria-hidden='true'>
-                            <div class='voice-meter-fill'></div>
-                          </div>
-                        </div>
-                      </div>
+              </div>
           </div>
           </div>
         </div>
       </section>
 
-      <section class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-6 shadow-panel'>
-        <p class='font-display text-[11px] uppercase tracking-[0.18em] text-blue0'>Topology</p>
+      <section class='local-install-cta' aria-labelledby='local-install-title'>
+        <div class='local-install-copy'>
+          <h2 id='local-install-title' class='local-install-title'>Install DroidMaster <strong>locally</strong> now</h2>
+        </div>
+        <div class='local-install-terminal' role='group' aria-label='DroidMaster npm install command'>
+          <div class='local-install-terminal-bar'>
+            <span class='local-install-dot local-install-dot--red'></span>
+            <span class='local-install-dot local-install-dot--amber'></span>
+            <span class='local-install-dot local-install-dot--green'></span>
+            <span class='local-install-tab local-install-tab--active'>npm</span>
+            <span class='local-install-tab'>local</span>
+            <span class='local-install-platform'>macOS &amp; Linux</span>
+          </div>
+          <button type='button' class='local-install-command' data-copy-command='npx droidmaster web' aria-label='Copy DroidMaster npm command'>
+            <span class='local-install-prompt'>$</span>
+            <code data-copy-command-label>npx droidmaster web</code>
+            <span class='local-install-copy-icon' aria-hidden='true'>copy</span>
+          </button>
+        </div>
+      </section>
+
+      <section class='df-card mt-6'>
+        <p class='df-kicker'>Topology</p>
         <h2 class='mt-2 font-body text-[clamp(1.45rem,2.7vw,2.2rem)] font-bold uppercase leading-none text-white'>Run local or cloud or both, desktop and mobile</h2>
         <p class='mt-3 max-w-[82ch] text-[17px] leading-7 text-text1'>Operate from your desktop browser, keep execution inside a local Docker container or a remote VPS, and continue from mobile on the same synchronized workspace.</p>
 
@@ -568,79 +624,63 @@ qq_17 qq_17 00kk 00kk λr λr 8f8f 8f8f t2t2 t2t2 aa9f aa9f vv::vv 55 55 55 c7c7
         </div>
       </section>
 
-      <section class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.84),rgba(23,23,23,.84))] p-6 shadow-panel'>
-        <p class='font-display text-[11px] uppercase tracking-[0.18em] text-blue0'>The Stack</p>
+      <section class='stack-intro-section mt-6'>
+        <p class='df-kicker'>The Stack</p>
         <h2 class='mt-2 font-body text-[clamp(1.45rem,2.7vw,2.2rem)] font-bold uppercase leading-none text-white'>Use the tools you already trust</h2>
         <p class='mt-3 max-w-[84ch] text-[17px] leading-7 text-text1'>DroidMaster is the surface around your agents, files, browser, and generated media. Bring your own model subscription, keep local access scoped, and extend the same workspace to cloud and mobile.</p>
-
-        <div class='feature-carousel mt-5' aria-label='DroidMaster feature carousel'>
-          <div class='feature-carousel-stage'>
-            <article class='feature-slide feature-slide--active'>
-              <div class='feature-slide-copy'>
-                <span>01 / Subscription</span>
-                <h3>Use your own Codex or Claude</h3>
-                <p>Keep the subscription you already pay for while DroidMaster adds the operating surface around it.</p>
-              </div>
-              <div class='feature-slide-visual feature-slide-visual--providers' aria-hidden='true'>
-                <div class='feature-provider-card'>Codex</div>
-                <div class='feature-provider-pulse'></div>
-                <div class='feature-provider-card'>Claude</div>
-              </div>
-            </article>
-            <article class='feature-slide'>
-              <div class='feature-slide-copy'>
-                <span>02 / Local Scope</span>
-                <h3>Containerized locally</h3>
-                <p>Expose only the folders, projects, and credentials you feel safe sharing with the runtime.</p>
-              </div>
-              <div class='feature-slide-visual feature-slide-visual--containers' aria-hidden='true'>
-                <div class='feature-container-stack'><span></span><span></span><span></span></div>
-                <div class='feature-scope-lines'><span></span><span></span><span></span></div>
-              </div>
-            </article>
-            <article class='feature-slide'>
-              <div class='feature-slide-copy'>
-                <span>03 / Images</span>
-                <h3>OpenRouter image tools</h3>
-                <p>Generate images in the same workspace where code, files, browser state, and chat history live.</p>
-              </div>
-              <div class='feature-slide-visual feature-slide-visual--images' aria-hidden='true'>
-                <div class='feature-image-frame'></div>
-                <div class='feature-image-frame feature-image-frame--small'></div>
-              </div>
-            </article>
-            <article class='feature-slide'>
-              <div class='feature-slide-copy'>
-                <span>04 / Browser</span>
-                <h3>In-app browser</h3>
-                <p>Inspect the product, review pages, and ask the agent to change what you see without leaving the app.</p>
-              </div>
-              <div class='feature-slide-visual feature-slide-visual--browser' aria-hidden='true'>
-                <div class='feature-browser-bar'><span></span><span></span><span></span></div>
-                <div class='feature-browser-page'><strong>SIDE PROJECT</strong></div>
-              </div>
-            </article>
-            <article class='feature-slide'>
-              <div class='feature-slide-copy'>
-                <span>05 / Cloud</span>
-                <h3>Deploy and sync mobile</h3>
-                <p>Deploy to cloud, access from the mobile app, and keep the remote surface synced with local work.</p>
-              </div>
-              <div class='feature-slide-visual feature-slide-visual--cloud' aria-hidden='true'>
-                <div class='feature-cloud-node'>Local</div>
-                <div class='feature-cloud-link'></div>
-                <div class='feature-cloud-node'>Mobile</div>
-              </div>
-            </article>
-          </div>
-          <div class='feature-carousel-dots' aria-hidden='true'>
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-        </div>
       </section>
 
-      <section id='faq' class='mt-6 rounded-sm border border-line1/60 bg-[linear-gradient(165deg,rgba(29,29,29,.82),rgba(23,23,23,.86))] p-8 shadow-panel'>
-        <p class='font-display text-[11px] uppercase tracking-[0.18em] text-amber0'>FAQ</p>
+      <div class='stack-feature-list mt-5' aria-label='DroidMaster feature list'>
+        <section class='stack-section stack-feature-section' data-stack-feature='subscription'>
+          <article class='stack-feature-row'>
+            <span class='stack-feature-index'>01</span>
+            <span class='stack-feature-signal'>Subscription passthrough</span>
+            <span class='stack-feature-icon' aria-hidden='true'>AI</span>
+            <h3>Use your own Codex or Claude</h3>
+            <p>Keep the subscription you already pay for while DroidMaster adds the operating surface around it.</p>
+          </article>
+        </section>
+        <section class='stack-section stack-feature-section' data-stack-feature='container'>
+          <article class='stack-feature-row'>
+            <span class='stack-feature-index'>02</span>
+            <span class='stack-feature-signal'>Scoped runtime</span>
+            <span class='stack-feature-icon' aria-hidden='true'>BOX</span>
+            <h3>Containerized locally</h3>
+            <p>Expose only the folders, projects, and credentials you feel safe sharing with the runtime.</p>
+          </article>
+        </section>
+        <section class='stack-section stack-feature-section' data-stack-feature='images'>
+          <article class='stack-feature-row'>
+            <span class='stack-feature-index'>03</span>
+            <span class='stack-feature-signal'>Generated media</span>
+            <span class='stack-feature-icon' aria-hidden='true'>IMG</span>
+            <h3>OpenRouter image tools</h3>
+            <p>Generate images in the same workspace where code, files, browser state, and chat history live.</p>
+          </article>
+        </section>
+        <section class='stack-section stack-feature-section' data-stack-feature='browser'>
+          <article class='stack-feature-row'>
+            <span class='stack-feature-index'>04</span>
+            <span class='stack-feature-signal'>Live inspection</span>
+            <span class='stack-feature-icon' aria-hidden='true'>WEB</span>
+            <h3>In-app browser</h3>
+            <p>Inspect the product, review pages, and ask the agent to change what you see without leaving the app.</p>
+          </article>
+        </section>
+        <section class='stack-section stack-feature-section' data-stack-feature='sync'>
+          <article class='stack-feature-row'>
+            <span class='stack-feature-index'>05</span>
+            <span class='stack-feature-signal'>Remote continuity</span>
+            <span class='stack-feature-icon' aria-hidden='true'>SYNC</span>
+            <h3>Deploy and sync mobile</h3>
+            <p>Deploy to cloud, access from the mobile app, and keep the remote surface synced with local work.</p>
+          </article>
+        </section>
+      </div>
+
+
+      <section id='faq' class='df-card mt-6'>
+        <p class='df-kicker'>FAQ</p>
         <h2 class='mt-2 font-body text-[clamp(1.35rem,2.8vw,2.1rem)] font-bold uppercase leading-none text-white'>Frequently asked questions</h2>
         <div class='faq-list mt-5'>
           <details class='faq-card' open>
